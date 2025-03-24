@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Alert, StyleSheet, View } from 'react-native'
 import { supabase } from '../../lib/supabase-client'
-import { Button, Input } from '@rneui/themed'
+import { Button, Input, Icon } from '@rneui/themed'
 
 export default function Auth() {
   const [email, setEmail] = useState('')
@@ -16,7 +16,7 @@ export default function Auth() {
     })
 
     if (error) Alert.alert(error.message)
-    setLoading(false)
+      setLoading(false)
   }
 
   async function signUpWithEmail() {
@@ -31,7 +31,17 @@ export default function Auth() {
 
     if (error) Alert.alert(error.message)
     if (!session) Alert.alert('Please check your inbox for email verification!')
-    setLoading(false)
+      setLoading(false)
+  }
+
+  async function signInWithGitHub() {
+    setLoading(true)
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+    })
+
+    if (error) Alert.alert(error.message)
+      setLoading(false)
   }
 
   return (
@@ -62,6 +72,16 @@ export default function Auth() {
       </View>
       <View style={styles.verticallySpaced}>
         <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
+      </View>
+      <View style={styles.verticallySpaced}>
+        <Button
+          title="GitHub"
+          buttonStyle={{ backgroundColor: 'rgba(39, 39, 39, 1)' }}
+          titleStyle={{marginHorizontal: 5}}
+          disabled={loading} 
+          onPress={() => signInWithGitHub()} 
+          icon={<Icon name="github" type="font-awesome" color="#FFF" />}
+        />
       </View>
     </View>
   )

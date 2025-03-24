@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from "react-native";
 import { supabase } from "../../../lib/supabase-client";
 import { useEffect, useState } from "react";
 import MainHeader from "../../../components/mainHeader";
@@ -23,15 +23,17 @@ export default function Settings() {
   }
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <MainHeader />
+      <ScrollView>
       <View style={{ padding: 16 }}>
         <Text>{JSON.stringify(user, null, 2)}</Text>
         <TouchableOpacity onPress={doLogout} style={styles.buttonContainer}>
           <Text style={styles.buttonText}>LOGOUT</Text>
         </TouchableOpacity>
       </View>
-    </>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

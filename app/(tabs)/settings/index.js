@@ -1,9 +1,9 @@
-import { Stack } from "expo-router";
-import { SafeAreaView, Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { supabase } from "../../../lib/supabase-client";
 import { useEffect, useState } from "react";
+import MainHeader from "../../../components/mainHeader";
 
-export default function SettingsPage() {
+export default function Settings() {
   const [user, setUser] = useState(null);
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -23,15 +23,15 @@ export default function SettingsPage() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Stack.Screen options={{ headerShown: true, title: "Settings" }} />
+    <>
+      <MainHeader />
       <View style={{ padding: 16 }}>
         <Text>{JSON.stringify(user, null, 2)}</Text>
         <TouchableOpacity onPress={doLogout} style={styles.buttonContainer}>
           <Text style={styles.buttonText}>LOGOUT</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </>
   );
 }
 

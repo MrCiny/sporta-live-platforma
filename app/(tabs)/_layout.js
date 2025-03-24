@@ -22,16 +22,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          tabBarLabel: "Settings",
-          title: "Settings",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome
-              size={28}
-              style={{ marginBottom: -3 }}
-              name="gear"
-              color={color}
-            />
-          ),
+          href: null
         }}
       />
     </Tabs>

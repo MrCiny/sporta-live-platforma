@@ -1,12 +1,14 @@
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { Stack } from "expo-router";
-import { Text } from "react-native";
+import MainHeader from "../../../components/mainHeader";
 
 export default function Home() {
     return (
-        <View>
-            <Stack.Screen options={{ headerShown: true, title: "Home"}} />
-            <Text>Welcome to the home page</Text>
-        </View>
+        <>
+            <MainHeader />
+            <View>
+                <Text>Welcome to the home page</Text>
+            </View>
+        </>
     )
 }

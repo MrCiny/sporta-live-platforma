@@ -1,5 +1,5 @@
 import { Slot } from "expo-router";
 
-export default function HomeLayout() {
+export default function SportsLayout() {
     return <Slot />
 }

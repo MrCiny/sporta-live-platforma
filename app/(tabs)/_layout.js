@@ -92,6 +92,12 @@ export default function TabsLayout() {
           href: null
         }}
       />
+      {/*<Tabs.Screen
+        name="streams"
+        options={{
+          href: null
+        }}
+      />*/}
     </Tabs>
   );
 }

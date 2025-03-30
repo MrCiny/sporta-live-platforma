@@ -1,21 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../../../components/mainHeader";
+import { router } from "expo-router";
+import { supabase } from "../../../lib/supabase-client";
 
 const liveStreams = [
     { id: "1", title: "Nīca/OtankiMilj - Rīga FC", thumbnail: "https://i.ytimg.com/vi/DD6pEKLENoA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDSZ1rMSDPWjdQE08FLWnvKjN3NEA" },
     { id: "2", title: "Tiešraide: Riga FC - BFC Daugavpils", thumbnail: "https://i0.tiesraides.lv/330x185/pictures/2024-03-01/dca2_tonybetsvirs.jpg" },
 ];
 
-const sportsNews = [
-    { id: "1", title: "Sezonas atklāšanas svētki, Superkauss un Rīgas derbijs 1. martā", image: "https://lff.lv/files/images/_resized/0000032233_1054_527_cut.png", author: "Toms Armanis" },
-    { id: "2", title: "Latvijas klasikā VEF un Ventspils noskaidros pēdējo pusfinālisti", image: "https://i7.tiesraides.lv/370x208/pictures/2025-03-30/9bb3_michael_randolph_bk_ventspils.jpg", author: "Agris Suveizda" },
-    { id: "3", title: "Balinska un Bļugera komandām agrās spēles, Vankūvera ciemos pie NHL līderes", image: "https://i5.tiesraides.lv/370x208/pictures/2025-03-30/22cc_teodors_blugers_canucks_nhl.jpg", author: "Agris Suveizda" },
-];
 
 export default function Sports() {
-    const navigation = useNavigation();
+    const [loading, setLoading] = useState(true)
+    const [sportsNews, setSportsNews] = useState([]);
+
+    useEffect(() => {
+        async function getSportaZinas() {
+            let { data: Sporta_zinas, error } = await supabase
+                .from('Sporta_zinas')
+                .select('*')
+                .range(0,2)
+    
+            setSportsNews(Sporta_zinas);
+            setLoading(false)
+        };
+
+        getSportaZinas();
+    }, [])
 
     const renderLiveStreams = () => (
         <>
@@ -33,7 +45,7 @@ export default function Sports() {
 
     const renderNewsItem = ({ item }) => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate("news", { news: item })}>
+            <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: item})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
                         <View style={styles.avatar}>
@@ -63,13 +75,15 @@ export default function Sports() {
             <View style={styles.headerContainer}>
                 <MainHeader />
             </View>
+            {console.log(sportsNews)}
+            {!loading &&
             <FlatList
                 data={sportsNews}
                 keyExtractor={(item) => item.id}
                 renderItem={renderNewsItem}
                 ListHeaderComponent={renderListHeader}
                 contentContainerStyle={styles.contentContainer}
-            />
+            />}
         </SafeAreaView>
     );
 }

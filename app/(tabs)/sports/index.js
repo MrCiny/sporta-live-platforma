@@ -1,25 +1,25 @@
 import React from "react";
-import { View, Text, ScrollView, FlatList, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { router } from "expo-router";
+import MainHeader from "../../../components/mainHeader";
 
 const liveStreams = [
     { id: "1", title: "Nīca/OtankiMilj - Rīga FC", thumbnail: "https://i.ytimg.com/vi/DD6pEKLENoA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDSZ1rMSDPWjdQE08FLWnvKjN3NEA" },
-    { id: "2", title: "Nīca/OtankiMilj - Rīga FC", thumbnail: "https://i.ytimg.com/vi/DD6pEKLENoA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDSZ1rMSDPWjdQE08FLWnvKjN3NEA" },
+    { id: "2", title: "Tiešraide: Riga FC - BFC Daugavpils", thumbnail: "https://i0.tiesraides.lv/330x185/pictures/2024-03-01/dca2_tonybetsvirs.jpg" },
 ];
-  
+
 const sportsNews = [
     { id: "1", title: "Sezonas atklāšanas svētki, Superkauss un Rīgas derbijs 1. martā", image: "https://lff.lv/files/images/_resized/0000032233_1054_527_cut.png", author: "Toms Armanis" },
-    { id: "2", title: "Sezonas atklāšanas svētki, Superkauss un Rīgas derbijs 1. martā", image: "https://lff.lv/files/images/_resized/0000032233_1054_527_cut.png", author: "Toms Armanis" },
-    { id: "3", title: "Sezonas atklāšanas svētki, Superkauss un Rīgas derbijs 1. martā", image: "https://lff.lv/files/images/_resized/0000032233_1054_527_cut.png", author: "Toms Armanis" },
+    { id: "2", title: "Latvijas klasikā VEF un Ventspils noskaidros pēdējo pusfinālisti", image: "https://i7.tiesraides.lv/370x208/pictures/2025-03-30/9bb3_michael_randolph_bk_ventspils.jpg", author: "Agris Suveizda" },
+    { id: "3", title: "Balinska un Bļugera komandām agrās spēles, Vankūvera ciemos pie NHL līderes", image: "https://i5.tiesraides.lv/370x208/pictures/2025-03-30/22cc_teodors_blugers_canucks_nhl.jpg", author: "Agris Suveizda" },
 ];
 
 export default function Sports() {
     const navigation = useNavigation();
-    
-    return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.header}>Tiešraides tev</Text>
+
+    const renderLiveStreams = () => (
+        <>
+            <Text style={styles.header}>Sporta tiešraides tev</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.liveContainer}>
                 {liveStreams.map((stream) => (
                     <View key={stream.id} style={styles.liveCard}>
@@ -28,33 +28,57 @@ export default function Sports() {
                     </View>
                 ))}
             </ScrollView>
-            <Text style={styles.header}>Karstākās ziņas</Text>
+        </>
+    );
+
+    const renderNewsItem = ({ item }) => {
+        return (
+            <TouchableOpacity onPress={() => navigation.navigate("news", { news: item })}>
+                <View style={styles.newsCard}>
+                    <View style={styles.newsHeader}>
+                        <View style={styles.avatar}>
+                            <Text style={styles.avatarText}>{item.author.charAt(0)}</Text> 
+                        </View>
+                        <View>
+                            <Text style={styles.newsAuthor}>{item.author}</Text>
+                            <Text style={styles.newsSubtitle}>{item.title}</Text>
+                        </View>
+                    </View>
+                    <Image source={{ uri: item.image }} style={styles.newsImage} />
+                    <Text style={styles.newsTitle}>{item.title}</Text>  
+                </View>
+            </TouchableOpacity>
+        );
+    };
+
+    const renderListHeader = () => (
+        <View style={styles.listHeader}>
+            {renderLiveStreams()}
+            <Text style={styles.header}>Sporta ziņas</Text>
+        </View>
+    );
+
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.headerContainer}>
+                <MainHeader />
+            </View>
             <FlatList
                 data={sportsNews}
-                keyExtractor={(item) => item.id }
-                renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: item})}>
-                        {console.log(item)}
-                        <View style={styles.newsCard}>
-                            <View style={styles.newsHeader}>
-                                <View style={styles.avatar}><Text style={styles.avatarText}>A</Text></View>
-                                <View>
-                                    <Text style={styles.newsAuthor}>Superkauss</Text>
-                                    <Text style={styles.newsSubtitle}>{item.author}</Text>
-                                </View>
-                            </View>
-                            <Image source={{ uri: item.image }} style={styles.newsImage} />
-                            <Text style={styles.newsTitle}>{item.title}</Text>
-                        </View>
-                    </TouchableOpacity>
-                )}
+                keyExtractor={(item) => item.id}
+                renderItem={renderNewsItem}
+                ListHeaderComponent={renderListHeader}
+                contentContainerStyle={styles.contentContainer}
             />
-        </ScrollView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#fff", padding: 10 },
+    safeArea: { flex: 1, backgroundColor: "#fff" },
+    headerContainer: { width: "100%", position: "absolute", top: 0, left: 0, right: 0, zIndex: 10},
+    contentContainer: { paddingTop: 80, backgroundColor: "#fff", paddingHorizontal: 10},
+    listHeader: { marginBottom: 10 },
     header: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
     liveContainer: { flexDirection: "row", marginBottom: 20 },
     liveCard: { width: 320, borderRadius: 10, overflow: "hidden", marginRight: 10, backgroundColor: "#f9f9f9", padding: 10 },

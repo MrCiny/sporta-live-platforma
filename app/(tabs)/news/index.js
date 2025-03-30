@@ -20,7 +20,7 @@ export default function news() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#fff", padding: 20 },
-    newsImage: { width: "100%", height: "100%", borderRadius: 10 },
+    newsImage: { width: "100%", height: 100, borderRadius: 10 },
     title: { fontSize: 22, fontWeight: "bold", marginTop: 10 },
     author: { fontSize: 16, color: "gray", marginTop: 5 },
     date: { fontSize: 14, color: "gray", marginTop: 5, fontStyle: "italic" },

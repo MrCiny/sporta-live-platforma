@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../../../components/mainHeader";
+import { supabase } from "../../../lib/supabase-client";
+import { router } from "expo-router";
 
 const liveStreams = [
     { id: "1", title: "", thumbnail: "" },
@@ -9,14 +11,23 @@ const liveStreams = [
     { id: "3", title: "", thumbnail: "" },
 ];
 
-const sportsNews = [
-    { id: "1", title: "Daugavpils volejbolisti uzvar pārliecinoši un izlīdzina rezultātu finālsērijā", image: "https://i8.tiesraides.lv/370x208/pictures/2025-02-22/b99c_1739170849foto_arturs_stiebrin.jpg", author: "Jānis Celmiņš" },
-    { id: "2", title: 'Obrumans: "3.setā pretinieki spēlēja ar dubultenerģiju, riskēja, un mums radās problēmas"', image: "https://i7.tiesraides.lv/800x600s/pictures/2025-03-28/8877_lushi_3v.jpg", author: "Ivars Bācis" },
-    { id: "3", title: "Robežsardze/Rīga piecu setu trillerī ar uzvaru sāk Latvijas čempionāta finālsēriju", image: "https://i8.tiesraides.lv/800x600s/pictures/2025-03-26/0f17_1743022452foto_artu_rsstiebri.jpg", author: "Kristiāns Dilāns" },
-];
-
 export default function Volleyball() {
-    const navigation = useNavigation();
+    const [loading, setLoading] = useState(true)
+    const [sportsNews, setSportsNews] = useState([]);
+
+    useEffect(() => {
+        async function getSportaZinas() {
+            let { data: Sporta_zinas, error } = await supabase
+                .from('Sporta_zinas')
+                .select('*')
+                .eq('sport', 'volleyball')
+    
+            setSportsNews(Sporta_zinas);
+            setLoading(false)
+        };
+
+        getSportaZinas();
+    }, [])
 
     const renderLiveStreams = () => (
         <>
@@ -34,7 +45,7 @@ export default function Volleyball() {
 
     const renderNewsItem = ({ item }) => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate("news", { news: item })}>
+            <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: item})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
                         <View style={styles.avatar}>

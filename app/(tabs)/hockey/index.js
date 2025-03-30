@@ -11,12 +11,6 @@ const liveStreams = [
     { id: "3", title: "", thumbnail: "" },
 ];
 
-const sportsNews = [
-    { id: "1", title: "Balinska un Bļugera komandām agrās spēles, Vankūvera ciemos pie NHL līderes", image: "https://i6.tiesraides.lv/800x600s/pictures/2025-03-30/22cc_teodors_blugers_canucks_nhl.jpg", author: "Agris Suveizda" },
-    { id: "2", title: "Ločmeļa vārti neglābj no NCAA sezonas beigām, Mūrnieks iemet mazākumā", image: "https://i7.tiesraides.lv/800x600s/pictures/2024-11-25/4c12_locmelis.jpg", author: "Agris Suveizda" },
-    { id: "3", title: "Draizaitls pirmais sasniedz 50 vārtus, Hišīram hat-trick, Blues mūk no Canucks", image: "https://i9.tiesraides.lv/800x600s/pictures/2025-03-30/8865_leon_draisaitl_edmonton_oilers.jpg", author: "Agris Suveizda" },
-];
-
 export default function Hockey() {
     const [loading, setLoading] = useState(true)
     const [sportsNews, setSportsNews] = useState([]);

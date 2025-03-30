@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../../../components/mainHeader";
+import { supabase } from "../../../lib/supabase-client";
+import { router } from "expo-router";
 
 const liveStreams = [
     { id: "1", title: "Tiešraide: VEF Rīga - Ventspils", thumbnail: "https://video.tiesraides.lv/735x413/posters-pro/latest.lv_34_1734909774.jpg" },
@@ -9,14 +11,23 @@ const liveStreams = [
     { id: "3", title: "", thumbnail: "" },
 ];
 
-const sportsNews = [
-    { id: "1", title: "Latvijas klasikā VEF un Ventspils noskaidros pēdējo pusfinālisti", image: "https://i8.tiesraides.lv/800x600s/pictures/2025-03-30/9bb3_michael_randolph_bk_ventspils.jpg", author: "Agris Suveizda" },
-    { id: "2", title: "Porziņģim labs sākums un daudz piezīmju, Bostonai astotā uzvara pēc kārtas", image: "https://i6.tiesraides.lv/370x208/pictures/2025-03-30/6930_kristaps_porzingis_boston_ce.jpg", author: "Agris Suveizda" },
-    { id: "3", title: "Fenomenālā Peidža Bekersa gāž rekordus un ieved UConn apgabala finālā", image: "https://i0.tiesraides.lv/800x600s/pictures/2025-03-30/0116_paige_bueckers_cheers.jpg", author: "Māris Noviks" },
-];
-
 export default function Basketball() {
-    const navigation = useNavigation();
+    const [loading, setLoading] = useState(true)
+    const [sportsNews, setSportsNews] = useState([]);
+    
+    useEffect(() => {
+        async function getSportaZinas() {
+            let { data: Sporta_zinas, error } = await supabase
+                .from('Sporta_zinas')
+                .select('*')
+                .eq('sport', 'basketball')
+    
+            setSportsNews(Sporta_zinas);
+            setLoading(false)
+        };
+
+        getSportaZinas();
+    }, [])
 
     const renderLiveStreams = () => (
         <>
@@ -34,7 +45,7 @@ export default function Basketball() {
 
     const renderNewsItem = ({ item }) => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate("news", { news: item })}>
+            <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: item})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
                         <View style={styles.avatar}>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import Video from "react-native-video";
 
@@ -29,16 +30,15 @@ export default function streams() {
         ],
     };
 
+    const player = useVideoPlayer(gameData.videoUrl, player => {
+        player.loop = true;
+        player.play();
+      });
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.videoContainer}>
-                <Video
-                    source={{ uri: gameData.videoUrl }}
-                    style={styles.video}
-                    controls={true}
-                    resizeMode="contain"
-                    paused={true}
-                />
+                    <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
             </View>
 
             <Text style={styles.matchInfo}>{gameData.date} | {gameData.time} | {gameData.round}</Text>

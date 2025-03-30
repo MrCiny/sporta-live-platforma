@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../../../components/mainHeader";
+import { supabase } from "../../../lib/supabase-client";
+import { router } from "expo-router";
 
 const liveStreams = [
     { id: "1", title: "Nīca/OtankiMilj - Rīga FC", thumbnail: "https://i.ytimg.com/vi/DD6pEKLENoA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDSZ1rMSDPWjdQE08FLWnvKjN3NEA" },
@@ -9,14 +11,23 @@ const liveStreams = [
     { id: "3", title: "Tiešraide: Grobiņa - Metta", thumbnail: "https://i0.tiesraides.lv/330x185/pictures/2024-03-01/dca2_tonybetsvirs.jpg" },
 ];
 
-const sportsNews = [
-    { id: "1", title: "Sezonas atklāšanas svētki, Superkauss un Rīgas derbijs 1. martā", image: "https://lff.lv/files/images/_resized/0000032233_1054_527_cut.png", author: "Toms Armanis" },
-    { id: "2", title: "Atlētiem ar Aspilikvetas izcilu sitienu nepietiek, Madrides Real paglābjas no fiasko", image: "https://i8.tiesraides.lv/800x600s/pictures/2025-03-30/8697_aspilikveta_atletico_espanyol.jpg", author: "Kārlis Justovičs" },
-    { id: "3", title: "Latvijas U19 telpu futbolisti izšķirošajā mačā piekāpjas Slovēnijai", image: "https://i4.tiesraides.lv/800x600s/pictures/2025-03-29/5abe_telpu.jpg", author: "Rolands Eliņš" },
-];
-
 export default function Football() {
-    const navigation = useNavigation();
+    const [loading, setLoading] = useState(true)
+    const [sportsNews, setSportsNews] = useState([]);
+
+    useEffect(() => {
+        async function getSportaZinas() {
+            let { data: Sporta_zinas, error } = await supabase
+                .from('Sporta_zinas')
+                .select('*')
+                .eq('sport', 'football')
+    
+            setSportsNews(Sporta_zinas);
+            setLoading(false)
+        };
+
+        getSportaZinas();
+    }, [])
 
     const renderLiveStreams = () => (
         <>
@@ -34,7 +45,7 @@ export default function Football() {
 
     const renderNewsItem = ({ item }) => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate("news", { news: item })}>
+            <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: item})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
                         <View style={styles.avatar}>

@@ -34,10 +34,10 @@ export default function Basketball() {
             <Text style={styles.header}>Basketbola tiešraides tev</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.liveContainer}>
                 {liveStreams.map((stream) => (
-                    <View key={stream.id} style={styles.liveCard}>
+                    <TouchableOpacity key={stream.id} style={styles.liveCard} onPress={() => router.push({ pathname: "/(tabs)/streams", params: { id: stream.id, title: stream.title, thumbnail: stream.thumbnail } })}>
                         <Image source={{ uri: stream.thumbnail }} style={styles.liveImage} />
                         <Text style={styles.liveTitle}>{stream.title}</Text>
-                    </View>
+                    </TouchableOpacity>
                 ))}
             </ScrollView>
         </>

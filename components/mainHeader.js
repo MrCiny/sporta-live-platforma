@@ -29,7 +29,7 @@ export default function MainHeader() {
     return (
         <Header
             leftComponent={settingsButton}
-            centerComponent={{ text: 'MY TITLE', style: { color: '#fff' } }}
+            centerComponent={{ text: 'SportsLife LV', style: { color: '#fff', fontSize: 30 } }}
             rightComponent={
                 <Avatar
                     size={40}

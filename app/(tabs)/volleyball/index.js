@@ -1,14 +1,96 @@
-import { View, Text } from "react-native";
-import { Stack } from "expo-router";
+import React from "react";
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../../../components/mainHeader";
 
+const liveStreams = [
+    { id: "1", title: "", thumbnail: "" },
+    { id: "2", title: "", thumbnail: "" },
+    { id: "3", title: "", thumbnail: "" },
+];
+
+const sportsNews = [
+    { id: "1", title: "Daugavpils volejbolisti uzvar pārliecinoši un izlīdzina rezultātu finālsērijā", image: "https://i8.tiesraides.lv/370x208/pictures/2025-02-22/b99c_1739170849foto_arturs_stiebrin.jpg", author: "Jānis Celmiņš" },
+    { id: "2", title: 'Obrumans: "3.setā pretinieki spēlēja ar dubultenerģiju, riskēja, un mums radās problēmas"', image: "https://i7.tiesraides.lv/800x600s/pictures/2025-03-28/8877_lushi_3v.jpg", author: "Ivars Bācis" },
+    { id: "3", title: "Robežsardze/Rīga piecu setu trillerī ar uzvaru sāk Latvijas čempionāta finālsēriju", image: "https://i8.tiesraides.lv/800x600s/pictures/2025-03-26/0f17_1743022452foto_artu_rsstiebri.jpg", author: "Kristiāns Dilāns" },
+];
+
 export default function Volleyball() {
-    return (
+    const navigation = useNavigation();
+
+    const renderLiveStreams = () => (
         <>
-            <MainHeader />
-            <View>
-                <Text>Welcome to the Volleyball page</Text>
-            </View>
+            <Text style={styles.header}>Volejbola tiešraides tev</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.liveContainer}>
+                {liveStreams.map((stream) => (
+                    <View key={stream.id} style={styles.liveCard}>
+                        <Image source={{ uri: stream.thumbnail }} style={styles.liveImage} />
+                        <Text style={styles.liveTitle}>{stream.title}</Text>
+                    </View>
+                ))}
+            </ScrollView>
         </>
-    )
+    );
+
+    const renderNewsItem = ({ item }) => {
+        return (
+            <TouchableOpacity onPress={() => navigation.navigate("news", { news: item })}>
+                <View style={styles.newsCard}>
+                    <View style={styles.newsHeader}>
+                        <View style={styles.avatar}>
+                            <Text style={styles.avatarText}>{item.author.charAt(0)}</Text> 
+                        </View>
+                        <View>
+                            <Text style={styles.newsAuthor}>{item.author}</Text>
+                            <Text style={styles.newsSubtitle}>{item.title}</Text>
+                        </View>
+                    </View>
+                    <Image source={{ uri: item.image }} style={styles.newsImage} />
+                    <Text style={styles.newsTitle}>{item.title}</Text>  
+                </View>
+            </TouchableOpacity>
+        );
+    };
+
+    const renderListHeader = () => (
+        <View style={styles.listHeader}>
+            {renderLiveStreams()}
+            <Text style={styles.header}>Volejbola ziņas</Text>
+        </View>
+    );
+
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.headerContainer}>
+                <MainHeader />
+            </View>
+            <FlatList
+                data={sportsNews}
+                keyExtractor={(item) => item.id}
+                renderItem={renderNewsItem}
+                ListHeaderComponent={renderListHeader}
+                contentContainerStyle={styles.contentContainer}
+            />
+        </SafeAreaView>
+    );
 }
+
+const styles = StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: "#fff" },
+    headerContainer: { width: "100%", position: "absolute", top: 0, left: 0, right: 0, zIndex: 10},
+    contentContainer: { paddingTop: 80, backgroundColor: "#fff", paddingHorizontal: 10},
+    listHeader: { marginBottom: 10 },
+    header: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
+    liveContainer: { flexDirection: "row", marginBottom: 20 },
+    liveCard: { width: 320, borderRadius: 10, overflow: "hidden", marginRight: 10, backgroundColor: "#f9f9f9", padding: 10 },
+    liveImage: { width: "100%", height: 170, borderRadius: 10 },
+    liveTitle: { fontSize: 16, fontWeight: "bold", textAlign: "center", padding: 5 },
+    newsCard: { marginBottom: 20, borderRadius: 10, overflow: "hidden", backgroundColor: "#fff", padding: 10, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 5, elevation: 3 },
+    newsHeader: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
+    avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#6200ea", justifyContent: "center", alignItems: "center", marginRight: 10 },
+    avatarText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
+    newsAuthor: { fontSize: 16, fontWeight: "bold" },
+    newsSubtitle: { fontSize: 14, color: "gray" },
+    newsImage: { width: "100%", height: 150, borderRadius: 10 },
+    newsTitle: { fontSize: 16, fontWeight: "bold", marginTop: 5 },
+});

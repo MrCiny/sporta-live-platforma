@@ -1,8 +1,9 @@
+import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
-export default function news({ route }) {
-    const { news } = route.params; // Get the passed news item
+export default function news() {
+    const news = useLocalSearchParams();
 
     return (
         <View style={styles.container}>

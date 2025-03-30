@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, FlatList, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 
 const liveStreams = [
     { id: "1", title: "Nīca/OtankiMilj - Rīga FC", thumbnail: "https://i.ytimg.com/vi/DD6pEKLENoA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDSZ1rMSDPWjdQE08FLWnvKjN3NEA" },
@@ -30,9 +31,10 @@ export default function Sports() {
             <Text style={styles.header}>Karstākās ziņas</Text>
             <FlatList
                 data={sportsNews}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.id }
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => navigation.navigate("news", { news: item })}>
+                    <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: item})}>
+                        {console.log(item)}
                         <View style={styles.newsCard}>
                             <View style={styles.newsHeader}>
                                 <View style={styles.avatar}><Text style={styles.avatarText}>A</Text></View>

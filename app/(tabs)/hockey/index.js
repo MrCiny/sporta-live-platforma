@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../../../components/mainHeader";
+import { router } from "expo-router";
+import { supabase } from "../../../lib/supabase-client";
 
 const liveStreams = [
     { id: "1", title: "", thumbnail: "" },
@@ -16,7 +18,22 @@ const sportsNews = [
 ];
 
 export default function Hockey() {
-    const navigation = useNavigation();
+    const [loading, setLoading] = useState(true)
+    const [sportsNews, setSportsNews] = useState([]);
+
+    useEffect(() => {
+        async function getSportaZinas() {
+            let { data: Sporta_zinas, error } = await supabase
+                .from('Sporta_zinas')
+                .select('*')
+                .eq('sport', 'hockey')
+    
+            setSportsNews(Sporta_zinas);
+            setLoading(false)
+        };
+
+        getSportaZinas();
+    }, [])
 
     const renderLiveStreams = () => (
         <>
@@ -34,7 +51,7 @@ export default function Hockey() {
 
     const renderNewsItem = ({ item }) => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate("news", { news: item })}>
+            <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: item})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
                         <View style={styles.avatar}>

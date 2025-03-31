@@ -27,10 +27,13 @@ export default function news() {
     return (
         <>
             <MainHeader />
-            <ScrollView>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {!loading &&
                     <View style={styles.container}>
-                        <Image source={{ uri: news.image }} style={styles.newsImage} />
+                        <View style={styles.imageContainer}>
+                            <Image source={{ uri: news.image }} style={styles.newsImage} />
+                            <View style={styles.overlay} />
+                        </View>
                         <Text style={styles.title}>{news.title}</Text>
                         <Text style={styles.author}>By {news.author}</Text>
                         <Text style={styles.date}>Published on {news.published}</Text>
@@ -43,10 +46,58 @@ export default function news() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#fff", padding: 20 },
-    newsImage: { width: "100%", height: 100, borderRadius: 10 },
-    title: { fontSize: 22, fontWeight: "bold", marginTop: 10 },
-    author: { fontSize: 16, color: "gray", marginTop: 5 },
-    date: { fontSize: 14, color: "gray", marginTop: 5, fontStyle: "italic" },
-    description: { fontSize: 16, marginTop: 10, lineHeight: 22 },
+    crollContainer: {
+        flexGrow: 1,
+        backgroundColor: "#F5F5F5",
+        paddingBottom: 20,
+    },
+    container: {
+        backgroundColor: "#fff",
+        margin: 20,
+        borderRadius: 12,
+        padding: 20,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
+    },
+    imageContainer: {
+        position: "relative",
+        borderRadius: 12,
+        overflow: "hidden",
+    },
+    newsImage: {
+        width: "100%",
+        height: 200,
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: "rgba(0,0,0,0.2)",
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginTop: 15,
+        textAlign: "center",
+    },
+    author: {
+        fontSize: 16,
+        color: "gray",
+        marginTop: 5,
+        textAlign: "center",
+    },
+    date: {
+        fontSize: 14,
+        color: "#666",
+        fontStyle: "italic",
+        marginTop: 3,
+        textAlign: "center",
+    },
+    description: {
+        fontSize: 18,
+        marginTop: 15,
+        lineHeight: 26,
+        textAlign: "justify",
+    }
 });

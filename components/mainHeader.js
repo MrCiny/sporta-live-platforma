@@ -35,6 +35,7 @@ export default function MainHeader() {
                     size={40}
                     rounded
                     source={{ uri: pic }}
+                    onPress={() => router.replace("/(tabs)/profile")}
                 />
             }   
         />

@@ -1,82 +1,100 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import Video from "react-native-video";
+import MainHeader from "../../../components/mainHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useLocalSearchParams } from "expo-router";
+import { supabase } from "../../../lib/supabase-client";
 
 export default function streams() {
-    const [spelesGaita, setSpelesGaita] = useState(true);
-    const gameData = {
-        date: "08.02.2025",
-        time: "13:00",
-        round: "18. KĀRTA",
-        team1: {
-            name: "FK NĪCA",
-            logo: "https://lff.lv/files/images_comet/Club/1/_resized/11924_1918211464_0_220_t.png",
-        },
-        team2: {
-            name: "RIGA FC",
-            logo: "https://lff.lv/files/images_comet/c5/3/_resized/c53b5c3709c8d44bf2422a97b247d0341da41749_0_220_t.png",
-        },
-        score: "4:3",
-        videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        events: [
-            { minute: "6'", team: "FK NĪCA", player: "Mārcis Červoņikovs" },
-            { minute: "15'", team: "RIGA FC", player: "Andžejs Mickēvičs" },
-            { minute: "17'", team: "FK NĪCA", player: "Raivis Svilis" },
-            { minute: "31'", team: "FK NĪCA", player: "Rihards Konovalovs" },
-            { minute: "31'", team: "FK NĪCA", player: "Raivis Svilis" },
-            { minute: "32'", team: "RIGA FC", player: "Daniils Fogels" },
-            { minute: "33'", team: "RIGA FC", player: "Dzmitry Kuzmin" },
-        ],
-    };
+    const info = useLocalSearchParams();
+    const [loading, setLoading] = useState(true);
+    const [spelesInfo, setSpelesInfo] = useState(null);
+    const [komandasInfo, setKomandasInfo] = useState([]);
+    const [spelesGaita, setSpelesGaita] = useState(false);
 
-    const player = useVideoPlayer(gameData.videoUrl, player => {
+    useEffect(() => {
+        async function getSpelesInfo() {
+            setLoading(true);
+            let { data, error } = await supabase
+                .from('Speles_Info')
+                .select('*')
+                .eq('id', info.id)
+    
+                setSpelesInfo(data);
+                getKomandasInfo(data);
+        };
+
+        async function getKomandasInfo(spele) {
+            let { data, error } = await supabase
+                .from('Komanda')
+                .select('*')
+                .in('id', [spele[0].komanda1, spele[0].komanda2])
+            
+                setKomandasInfo(data);
+                setLoading(false);
+        };
+
+        getSpelesInfo();
+    }, [info.id])
+
+    const player = useVideoPlayer(loading ? "" : spelesInfo[0].tiesraides_URL, player => {
         player.loop = true;
-        player.play();
       });
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.videoContainer}>
-                    <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
-            </View>
-
-            <Text style={styles.matchInfo}>{gameData.date} | {gameData.time} | {gameData.round}</Text>
-
-            <View style={styles.scoreContainer}>
-                <Text style={styles.teamName}>{gameData.team1.name}</Text>
-                <Text style={styles.score}>{gameData.score}</Text>
-                <Text style={styles.teamName}>{gameData.team2.name}</Text>
-            </View>
-
-            <View style={styles.banner}>
-                <Image source={{ uri: gameData.team1.logo }} style={styles.teamLogo} />
-                <Text style={styles.vsText}>VS</Text>
-                <Image source={{ uri: gameData.team2.logo }} style={styles.teamLogo} />
-            </View>
-
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText} onPress={() => setSpelesGaita(false)}>Spēles gaita</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, styles.darkButton]}>
-                    <Text style={styles.darkButtonText}>Spēles protokols</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.eventsContainer}>
-                {gameData.events.map((event, index) => (
-                    <View key={index} style={styles.eventCard}>
-                        <Text style={styles.eventText}>
-                            ({event.minute}) {event.team} VĀRTI!!!
-                        </Text>
-                        <Text style={styles.eventDetails}>
-                            Vārtus guva {event.team} spēlētājs {event.player}
-                        </Text>
+        <>
+        <MainHeader />
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F7FA" }}>
+            {!loading &&
+                <ScrollView style={styles.container}>
+                    <View style={styles.videoContainer}>
+                            <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
                     </View>
-                ))}
-            </View>
-        </ScrollView>
+
+                    <Text style={styles.matchInfo}>{spelesInfo[0].date} | {spelesInfo[0].laiks}</Text>
+
+
+                    <View style={styles.scoreContainer}>
+                        <Text style={styles.teamName}>{komandasInfo[0].nosaukums}</Text>
+                        <Text style={styles.score}>{spelesInfo[0].rezultats}</Text>
+                        <Text style={styles.teamName}>{komandasInfo[1].nosaukums}</Text>
+                    </View>
+
+                    <View style={styles.banner}>
+                        <Image source={{ uri: komandasInfo[0].logo }} style={styles.teamLogo} />
+                        <Text style={styles.vsText}>VS</Text>
+                        <Image source={{ uri: komandasInfo[1].logo }} style={styles.teamLogo} />
+                    </View>
+
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.button}>
+                            <Text style={styles.buttonText} onPress={() => setSpelesGaita(false)}>Spēles gaita</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, styles.darkButton]}>
+                            <Text style={styles.darkButtonText}>Spēles protokols</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {spelesInfo[0].events != null &&
+                        <View style={styles.eventsContainer}>
+                            {spelesInfo[0].events.map((event, index) => (
+                                <View key={index} style={styles.eventCard}>
+                                    <Text style={styles.eventText}>
+                                        ({event.minute}) {event.team} VĀRTI!!!
+                                    </Text>
+                                    <Text style={styles.eventDetails}>
+                                        Vārtus guva {event.team} spēlētājs {event.player}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+                    }
+                </ScrollView>
+            }
+        </SafeAreaView>
+        </>
     );
 }
 
@@ -87,7 +105,7 @@ const styles = StyleSheet.create({
     banner: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginBottom: 10 },
     teamLogo: { width: 80, height: 80, marginHorizontal: 5 },
     vsText: { fontSize: 24, fontWeight: "bold" },
-    matchInfo: { textAlign: "center", fontSize: 14, color: "white", backgroundColor: "red", padding: 5, borderRadius: 5 },
+    matchInfo: { textAlign: "center", fontSize: 14, color: "white", backgroundColor: "#288cdc", padding: 5, borderRadius: 5 },
     scoreContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 15 },
     teamName: { fontSize: 18, fontWeight: "bold", textAlign: "center", flex: 1 },
     score: { fontSize: 32, fontWeight: "bold", textAlign: "center", flex: 1 },

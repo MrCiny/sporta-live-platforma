@@ -7,7 +7,6 @@ export default function IndexPage() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         router.replace("/(tabs)/sports/");
-        console.log("hello!")
       } else {
         console.log("no user");
       }

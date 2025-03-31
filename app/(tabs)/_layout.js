@@ -92,12 +92,18 @@ export default function TabsLayout() {
           href: null
         }}
       />
-      {/*<Tabs.Screen
+      <Tabs.Screen
+        name="profile"
+        options={{
+          href: null
+        }}
+      />
+      <Tabs.Screen
         name="streams"
         options={{
           href: null
         }}
-      />*/}
+      />
     </Tabs>
   );
 }

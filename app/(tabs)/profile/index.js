@@ -1,11 +1,16 @@
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity } from "react-native";
+import { Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity } from "react-native";
 import { supabase } from "../../../lib/supabase-client";
 import { useEffect, useState } from "react";
 import MainHeader from "../../../components/mainHeader";
+import { useTheme } from "../../../components/themeContext";
+import { getStyles } from "../../../styles/styles";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState({ name: "", email: "", avatar_url: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png", username: "", created_at: "" });
+
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
 
   const doLogout = async () => {
     const {error} = await supabase.auth.signOut();
@@ -33,7 +38,7 @@ export default function Profile() {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F7FA" }}>
+    <SafeAreaView style={styles.safeArea}>
       <MainHeader />
       {user && 
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -56,54 +61,3 @@ export default function Profile() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-  },
-  profileContainer: {
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
-    width: "90%",
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 12,
-    borderWidth: 3,
-    borderColor: "#000968",
-  },
-  nameText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 4,
-  },
-  usernameText: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#666",
-    marginBottom: 8,
-  },
-  emailText: {
-    fontSize: 16,
-    color: "#444",
-    marginBottom: 10,
-  },
-  joinDateText: {
-    fontSize: 14,
-    color: "#777",
-    fontStyle: "italic",
-  },
-});

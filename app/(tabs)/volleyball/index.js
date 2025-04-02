@@ -4,11 +4,16 @@ import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../../../components/mainHeader";
 import { supabase } from "../../../lib/supabase-client";
 import { router } from "expo-router";
+import { useTheme } from "../../../components/themeContext";
+import { getStyles } from "../../../styles/styles";
 
 export default function Volleyball() {
     const [loading, setLoading] = useState(true)
     const [sportsNews, setSportsNews] = useState([]);
     const [liveStreams, setLiveStreams] = useState([]);
+    const { theme, toggleTheme } = useTheme();
+        
+    const styles = getStyles(theme);
 
     useEffect(() => {
         async function getSportaZinas() {
@@ -37,7 +42,7 @@ export default function Volleyball() {
 
     const renderLiveStreams = () => (
         <>
-            <Text style={styles.header}>Volejbola tiešraides tev</Text>
+            <Text style={styles.headerText}>Volejbola tiešraides tev</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.liveContainer}>
                 {liveStreams.map((stream) => (
                     <TouchableOpacity key={stream.id} style={styles.liveCard} onPress={() => router.push({ pathname: "/(tabs)/streams", params: { id: stream.speles_id } })}>
@@ -54,7 +59,7 @@ export default function Volleyball() {
             <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: { id: item.id }})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
-                        <View style={styles.avatar}>
+                        <View style={styles.authorAvatar}>
                             <Text style={styles.avatarText}>{item.author.charAt(0)}</Text> 
                         </View>
                         <View>
@@ -72,7 +77,7 @@ export default function Volleyball() {
     const renderListHeader = () => (
         <View style={styles.listHeader}>
             {renderLiveStreams()}
-            <Text style={styles.header}>Volejbola ziņas</Text>
+            <Text style={styles.headerText}>Volejbola ziņas</Text>
         </View>
     );
 

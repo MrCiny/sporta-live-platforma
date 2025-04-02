@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import Video from "react-native-video";
 import MainHeader from "../../../components/mainHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
@@ -68,9 +67,9 @@ export default function streams() {
                     </View>
 
                     <View style={styles.banner}>
-                        <Image source={{ uri: komandasInfo[0].logo }} style={styles.teamLogo} />
+                        <Image resizeMode={"contain"} source={{ uri: komandasInfo[0].logo }} style={styles.teamLogo} />
                         <Text style={styles.vsText}>VS</Text>
-                        <Image source={{ uri: komandasInfo[1].logo }} style={styles.teamLogo} />
+                        <Image resizeMode={"contain"} source={{ uri: komandasInfo[1].logo }} style={styles.teamLogo} />
                     </View>
 
                     <View style={styles.streamButtonContainer}>

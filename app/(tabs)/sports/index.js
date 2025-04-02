@@ -64,7 +64,6 @@ export default function Sports() {
                         </View>
                         <View>
                             <Text style={styles.newsAuthor}>{item.author}</Text>
-                            <Text style={styles.newsSubtitle}>{item.title}</Text>
                         </View>
                     </View>
                     <Image source={{ uri: item.image }} style={styles.newsImage} />

@@ -3,9 +3,12 @@ import { Button, Icon, Avatar } from '@rneui/themed';
 import { router } from "expo-router";
 import { supabase } from "../lib/supabase-client";
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { getStyles } from "../styles/styles";
+import { useTheme } from "./themeContext";
 
 export default function MainHeader() {
+    const { theme, toggleTheme } = useTheme();
+    const styles = getStyles(theme);
     const [pic, setPic] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
       useEffect(() => {
         supabase.auth.getUser().then(({ data: { user } }) => {
@@ -18,7 +21,7 @@ export default function MainHeader() {
     const redirectSettings = () => {
         router.replace("/(tabs)/settings");
     }
-
+    
     const settingsButton = () => {
         return (
             <Button 
@@ -34,7 +37,13 @@ export default function MainHeader() {
     return (
         <Header
             containerStyle={styles.headerContainer}
-            leftComponent={settingsButton}
+            leftComponent={
+                <Button 
+                    onPress={toggleTheme} 
+                    type="clear" 
+                    icon={<Icon type="feather" name={theme === "dark" ? "sun" : "moon"} color="#fff" />}
+                />
+            }
             centerComponent={{ text: 'SportsLife LV', style: { color: '#fff', fontSize: 24, fontWeight: "bold", textAlign: "center" } }}
             rightComponent={
                 <Avatar
@@ -48,28 +57,3 @@ export default function MainHeader() {
         />
     );
 }
-
-const styles = StyleSheet.create({
-    headerContainer: {
-        borderBottomWidth: 0, 
-        paddingHorizontal: 10,
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#fff",
-        textAlign: "center",
-    },
-    iconButton: {
-        padding: 5,
-    },
-    avatar: {
-        borderWidth: 2,
-        borderColor: "#fff",
-    },
-});

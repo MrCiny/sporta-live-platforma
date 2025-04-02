@@ -6,6 +6,8 @@ import MainHeader from "../../../components/mainHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { supabase } from "../../../lib/supabase-client";
+import { useTheme } from "../../../components/themeContext";
+import { getStyles } from "../../../styles/styles";
 
 export default function streams() {
     const info = useLocalSearchParams();
@@ -13,6 +15,9 @@ export default function streams() {
     const [spelesInfo, setSpelesInfo] = useState(null);
     const [komandasInfo, setKomandasInfo] = useState([]);
     const [spelesGaita, setSpelesGaita] = useState(false);
+    const { theme, toggleTheme } = useTheme();
+            
+    const styles = getStyles(theme);
 
     useEffect(() => {
         async function getSpelesInfo() {
@@ -46,9 +51,9 @@ export default function streams() {
     return (
         <>
         <MainHeader />
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F7FA" }}>
+        <SafeAreaView style={styles.safeArea}>
             {!loading &&
-                <ScrollView style={styles.container}>
+                <ScrollView style={styles.streamContainer}>
                     <View style={styles.videoContainer}>
                             <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
                     </View>
@@ -68,11 +73,11 @@ export default function streams() {
                         <Image source={{ uri: komandasInfo[1].logo }} style={styles.teamLogo} />
                     </View>
 
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.button}>
-                            <Text style={styles.buttonText} onPress={() => setSpelesGaita(false)}>Spēles gaita</Text>
+                    <View style={styles.streamButtonContainer}>
+                        <TouchableOpacity style={styles.streamButton}>
+                            <Text style={styles.streamButtonTextuttonText} onPress={() => setSpelesGaita(false)}>Spēles gaita</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button, styles.darkButton]}>
+                        <TouchableOpacity style={[styles.streamButton, styles.darkButton]}>
                             <Text style={styles.darkButtonText}>Spēles protokols</Text>
                         </TouchableOpacity>
                     </View>
@@ -99,7 +104,7 @@ export default function streams() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#fff", padding: 15 },
+    
     videoContainer: { width: "100%", height: 200, backgroundColor: "black", marginBottom: 10 },
     video: { width: "100%", height: "100%" },
     banner: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginBottom: 10 },

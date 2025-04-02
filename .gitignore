@@ -36,4 +36,4 @@ yarn-error.*
 *.tsbuildinfo
 
 # supabase.ts
-lib/supabase.ts
+lib/supabase-client.js

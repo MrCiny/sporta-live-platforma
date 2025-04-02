@@ -2,9 +2,14 @@ import { Text, View, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { supabase } from "../../../lib/supabase-client";
 import { useEffect, useState } from "react";
 import MainHeader from "../../../components/mainHeader";
+import { useTheme } from "../../../components/themeContext";
+import { getStyles } from "../../../styles/styles";
 
 export default function Settings() {
   const [user, setUser] = useState(null);
+  const { theme, toggleTheme } = useTheme();
+              
+    const styles = getStyles(theme);
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -36,41 +41,3 @@ export default function Settings() {
     </SafeAreaView>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
-  buttonContainer: {
-    backgroundColor: "#000968",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    margin: 8,
-  },
-  buttonText: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
-    alignSelf: "center",
-    textTransform: "uppercase",
-  },
-  textInput: {
-    borderColor: "#000968",
-    borderRadius: 4,
-    borderStyle: "solid",
-    borderWidth: 1,
-    padding: 12,
-    margin: 8,
-  },
-});

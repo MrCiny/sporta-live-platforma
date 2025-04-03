@@ -1,35 +1,32 @@
-import { Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity } from "react-native";
+import { Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Alert } from "react-native";
 import { supabase } from "../../../lib/supabase-client";
 import { useEffect, useState } from "react";
 import MainHeader from "../../../components/mainHeader";
 import { useTheme } from "../../../components/themeContext";
 import { getStyles } from "../../../styles/styles";
+import ImagePicker from 'react-native-image-picker'; // For non-Expo users
 
 export default function Profile() {
   const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState({ name: "", email: "", avatar_url: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png", username: "", created_at: "" });
+  const [userData, setUserData] = useState({ name: "", email: "", avatar_url: "", username: "", created_at: "" });
+  const [isEditing, setIsEditing] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
 
   const { theme } = useTheme();
   const styles = getStyles(theme);
-
-  const doLogout = async () => {
-    const {error} = await supabase.auth.signOut();
-    if (error) {
-      Alert.alert("Error Signing Out User", error.message);
-    }
-  }
 
   useEffect(() => {
     async function fetchUser() {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        const hey = {
-          ...userData,
-          ...user.user_metadata,
-          ...user
-        }
-        setUserData(hey);
+        setUserData({
+          name: user.user_metadata?.name || "",
+          email: user.email || "",
+          avatar_url: user.user_metadata?.avatar_url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+          username: user.user_metadata?.username || "",
+          created_at: user.created_at,
+        });
       } else {
         Alert.alert("Error Accessing User");
       }
@@ -37,27 +34,93 @@ export default function Profile() {
     fetchUser();
   }, []);
 
+  const handleUpdateProfile = async () => {
+    // If the user picked an image, upload it to Supabase storage and get the URL
+    let avatarUrl = userData.avatar_url;
+    if (imageUri) {
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .upload(`${Date.now()}`, { uri: imageUri }, { contentType: 'image/png' });
+
+      if (error) {
+        Alert.alert("Error uploading image", error.message);
+        return;
+      }
+      avatarUrl = data?.path;
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        name: userData.name,
+        username: userData.username,
+        avatar_url: avatarUrl,
+      },
+    });
+
+    if (error) {
+      Alert.alert("Error Updating Profile", error.message);
+    } else {
+      Alert.alert("Profile Updated Successfully");
+      setIsEditing(false);
+    }
+  };
+
+  const handleChooseImage = () => {
+    const options = {
+      title: 'Choose Profile Photo',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+
+    ImagePicker.launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        setImageUri(response.uri);
+      }
+    });
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <MainHeader />
-      {user && 
+      {user && (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.profileContainer}>
-            {console.log(user)}
-            <Image 
-              source={{ uri: userData.avatar_url || "https://via.placeholder.com/100" }} 
-              style={styles.profileImage} 
-            />
-            <Text style={styles.nameText}>{userData.name || "No Name Found"}</Text>
-            <Text style={styles.usernameText}>@{userData.username || "Unknown"}</Text>
-            <Text style={styles.emailText}>{userData.email || "No Email Found"}</Text>
-            <Text style={styles.joinDateText}>Joined: {userData.created_at ? new Date(userData.created_at).toDateString() : "Unknown"}</Text>
-            <TouchableOpacity onPress={doLogout} style={styles.buttonContainer}>
+            <Image source={{ uri: imageUri || userData.avatar_url }} style={styles.profileImage} />
+            {isEditing ? (
+              <>
+                <TextInput style={styles.input} value={userData.name} onChangeText={(text) => setUserData({ ...userData, name: text })} placeholder="Name" />
+                <TextInput style={styles.input} value={userData.username} onChangeText={(text) => setUserData({ ...userData, username: text })} placeholder="Username" />
+                <TouchableOpacity onPress={handleChooseImage} style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>CHANGE PROFILE PHOTO</Text>
+                </TouchableOpacity>
+                <TextInput style={styles.input} value={userData.avatar_url} onChangeText={(text) => setUserData({ ...userData, avatar_url: text })} placeholder="Avatar URL" />
+                <TouchableOpacity onPress={handleUpdateProfile} style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>SAVE</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <Text style={styles.nameText}>{userData.name || "No Name Found"}</Text>
+                <Text style={styles.usernameText}>@{userData.username || "Unknown"}</Text>
+                <Text style={styles.emailText}>{userData.email || "No Email Found"}</Text>
+                <Text style={styles.joinDateText}>Joined: {new Date(userData.created_at).toDateString()}</Text>
+                <TouchableOpacity onPress={() => setIsEditing(true)} style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>EDIT</Text>
+                </TouchableOpacity>
+              </>
+            )}
+            <TouchableOpacity onPress={async () => await supabase.auth.signOut()} style={styles.buttonContainer}>
               <Text style={styles.buttonText}>LOGOUT</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
-      }
+      )}
     </SafeAreaView>
   );
 }

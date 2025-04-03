@@ -278,5 +278,6 @@ export const getStyles = (theme) => {
         eventCard: { backgroundColor: colors.eventCard, padding: 10, borderRadius: 5, marginBottom: 10 },
         eventText: { fontSize: 16, fontWeight: "bold", color: colors.text},
         eventDetails: { fontSize: 14, color: colors.subtitle, marginTop: 5 },
+        input: { color: colors.text, textAlign: "center"}
     });
 };

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import MainHeader from "../../../components/mainHeader";
 import { useTheme } from "../../../components/themeContext";
 import { getStyles } from "../../../styles/styles";
-import ImagePicker from 'react-native-image-picker'; // For non-Expo users
+import * as ImagePicker from 'expo-image-picker';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -20,10 +20,30 @@ export default function Profile() {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
+        const isValidUrl = (url) => {
+          try {
+            new URL(url);
+            return true;
+          } catch (_) {
+            return false;
+          }
+        };
+        let avatar_url = user.user_metadata?.avatar_url
+
+        if (!isValidUrl(avatar_url)) {
+          const { data, error } = await supabase
+            .storage
+            .from("avatars")
+            .getPublicUrl(avatar_url);
+
+          if (!error) {
+            avatar_url = data.publicUrl;
+          }
+        }
         setUserData({
           name: user.user_metadata?.name || "",
           email: user.email || "",
-          avatar_url: user.user_metadata?.avatar_url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+          avatar_url: avatar_url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
           username: user.user_metadata?.username || "",
           created_at: user.created_at,
         });
@@ -46,6 +66,7 @@ export default function Profile() {
         Alert.alert("Error uploading image", error.message);
         return;
       }
+
       avatarUrl = data?.path;
     }
 
@@ -65,7 +86,7 @@ export default function Profile() {
     }
   };
 
-  const handleChooseImage = () => {
+  const handleChooseImage = async () => {
     const options = {
       title: 'Choose Profile Photo',
       storageOptions: {
@@ -74,15 +95,16 @@ export default function Profile() {
       },
     };
 
-    ImagePicker.launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
+    let response = await ImagePicker.launchImageLibraryAsync(options);
+    if (response) {
+      if (response.canceled) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
       } else {
-        setImageUri(response.uri);
+        setImageUri(response.assets[0].uri);
       }
-    });
+    }
   };
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Alert, StyleSheet, View } from 'react-native'
-import { supabase } from '../../lib/supabase-client'
+import { supabase } from '@/lib/supabase-client'
 import { Button, Input, Icon } from '@rneui/themed'
 
 export default function Auth() {

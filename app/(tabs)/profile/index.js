@@ -1,9 +1,9 @@
 import { Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Alert } from "react-native";
-import { supabase } from "../../../lib/supabase-client";
+import { supabase } from "@/lib/supabase-client";
 import { useEffect, useState } from "react";
-import MainHeader from "../../../components/mainHeader";
-import { useTheme } from "../../../components/themeContext";
-import { getStyles } from "../../../styles/styles";
+import MainHeader from "@/components/mainHeader";
+import { useTheme } from "@/components/themeContext";
+import { getStyles } from "@/styles/styles";
 import * as ImagePicker from 'expo-image-picker';
 
 export default function Profile() {

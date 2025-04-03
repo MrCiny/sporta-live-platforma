@@ -1,9 +1,9 @@
 import { Text, View, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from "react-native";
-import { supabase } from "../../../lib/supabase-client";
+import { supabase } from "@/lib/supabase-client";
 import { useEffect, useState } from "react";
-import MainHeader from "../../../components/mainHeader";
-import { useTheme } from "../../../components/themeContext";
-import { getStyles } from "../../../styles/styles";
+import MainHeader from "@/components/mainHeader";
+import { useTheme } from "@/components/themeContext";
+import { getStyles } from "@/styles/styles";
 
 export default function Settings() {
   const [user, setUser] = useState(null);

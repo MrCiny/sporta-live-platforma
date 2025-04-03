@@ -1,8 +1,8 @@
 import { Tabs } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { ThemeProvider, useTheme } from "../../components/themeContext";
-import { getStyles } from "../../styles/styles";
+import { ThemeProvider, useTheme } from "@/components/themeContext";
+import { getStyles } from "@/styles/styles";
 
 export default function TabsLayout() {
   return (

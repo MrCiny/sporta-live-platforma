@@ -1,10 +1,10 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
-import { supabase } from "../../../lib/supabase-client";
-import MainHeader from "../../../components/mainHeader";
-import { useTheme } from "../../../components/themeContext";
-import { getStyles } from "../../../styles/styles";
+import { supabase } from "@/lib/supabase-client";
+import MainHeader from "@/components/mainHeader";
+import { useTheme } from "@/components/themeContext";
+import { getStyles } from "@/styles/styles";
 
 export default function news() {
     const params = useLocalSearchParams();

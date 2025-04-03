@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import MainHeader from "../../../components/mainHeader";
+import MainHeader from "@/components/mainHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
-import { supabase } from "../../../lib/supabase-client";
-import { useTheme } from "../../../components/themeContext";
-import { getStyles } from "../../../styles/styles";
+import { supabase } from "@/lib/supabase-client";
+import { useTheme } from "@/components/themeContext";
+import { getStyles } from "@/styles/styles";
 
 export default function streams() {
     const info = useLocalSearchParams();

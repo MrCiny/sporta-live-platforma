@@ -1,9 +1,9 @@
 import { Header } from "react-native-elements";
 import { Button, Icon, Avatar } from '@rneui/themed';
 import { router } from "expo-router";
-import { supabase } from "../lib/supabase-client";
+import { supabase } from "@/lib/supabase-client";
 import { useEffect, useState } from "react";
-import { getStyles } from "../styles/styles";
+import { getStyles } from "@/styles/styles";
 import { useTheme } from "./themeContext";
 
 export default function MainHeader() {

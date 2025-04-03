@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import MainHeader from "../../../components/mainHeader";
-import { supabase } from "../../../lib/supabase-client";
+import MainHeader from "@/components/mainHeader";
+import { supabase } from "@/lib/supabase-client";
 import { router } from "expo-router";
-import { useTheme } from "../../../components/themeContext";
-import { getStyles } from "../../../styles/styles";
+import { useTheme } from "@/components/themeContext";
+import { getStyles } from "@/styles/styles";
 
 export default function Volleyball() {
     const [loading, setLoading] = useState(true)

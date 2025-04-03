@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import MainHeader from "../../../components/mainHeader";
-import { supabase } from "../../../lib/supabase-client";
+import { View, Text, FlatList, Image, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import MainHeader from "@/components/mainHeader";
+import { supabase } from "@/lib/supabase-client";
 import { router } from "expo-router";
-import { getStyles } from "../../../styles/styles";
-import { useTheme } from "../../../components/themeContext";
+import { getStyles } from "@/styles/styles";
+import { useTheme } from "@/components/themeContext";
 
 export default function Football() {
     const [loading, setLoading] = useState(true)

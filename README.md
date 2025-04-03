@@ -1,5 +1,5 @@
 # Sporta tiešraides platforma
-Authors: Niks Janeks Kreitāls, Ņikita Salarjovs
+Autori: Niks Janeks Kreitāls, Ņikita Salarjovs
 
 ## Aplikācijas apraksts
 Šis projekts ir sporta tiešraižu platformas prototips, kas piedāvā piekļuvi dažādiem sporta veidiem un to saistītajām ziņām un tiešraidēm. Platforma šobrīd ietver piecas sadaļas:

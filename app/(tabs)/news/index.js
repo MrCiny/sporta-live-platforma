@@ -21,7 +21,6 @@ export default function news() {
                 .eq('id', params.id)
     
                 setNews(Sporta_zinas[0]);
-                console.log(Sporta_zinas)
             setLoading(false)
         };
 

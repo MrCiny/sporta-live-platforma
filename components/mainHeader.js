@@ -11,9 +11,32 @@ export default function MainHeader() {
     const styles = getStyles(theme);
     const [pic, setPic] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
       useEffect(() => {
+        async function getPicture(avatar_url) {
+            const isValidUrl = (url) => {
+                try {
+                  new URL(url);
+                  return true;
+                } catch (_) {
+                  return false;
+                }
+              };
+      
+              if (!isValidUrl(avatar_url)) {
+                const { data, error } = await supabase
+                    .storage
+                    .from("avatars")
+                    .getPublicUrl(avatar_url);
+      
+                if (!error) {
+                  avatar_url = data.publicUrl;
+                }
+              }
+            setPic(avatar_url)
+        }
         supabase.auth.getUser().then(({ data: { user } }) => {
           if (user.user_metadata.avatar_url) {
-            setPic(user.user_metadata.avatar_url);
+            let avatar_url = user.user_metadata.avatar_url
+            getPicture(avatar_url)
           }
         });
       }, []);

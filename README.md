@@ -34,6 +34,13 @@ Katrā sadaļā ir pieejami raksti un tiešraides, kas saistīti ar attiecīgo s
 4. Aplikācijai var piekļūt caur `http://localhost:8081/` (vai kāds cits specificēts ports).
 
 ## Ekrānšāviņi ar paskaidrojumiem
+![pierakstisana](https://github.com/user-attachments/assets/dc6ee979-c94e-41c0-ac45-7cc5d66f89f7)
+![tiesraidesEkrans](https://github.com/user-attachments/assets/37249ff4-6b04-40d2-be4e-545de6cc400a)
+![galvenaisEkransTumss](https://github.com/user-attachments/assets/b3f6ae39-07f6-4900-affa-f49544af7a20)
+![galvenaisEkransGaiss](https://github.com/user-attachments/assets/9cff11f7-b7ed-41bc-b4cf-67af872a4263)
+![raksts](https://github.com/user-attachments/assets/06cb1b73-962e-448e-89df-0e1370eaf7e3)
+![profilaRedigesana](https://github.com/user-attachments/assets/f6f554b3-63c1-4142-bf72-ed480512f827)
+![profils](https://github.com/user-attachments/assets/fcdf0fa9-9f91-411c-ba4c-5464c51efe34)
 
 ## Izmantotās tehnoloģijas un bibliotēkas
 - React – lietotāja interfeisa izstrādei

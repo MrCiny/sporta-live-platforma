@@ -35,24 +35,31 @@ Katrā sadaļā ir pieejami raksti un tiešraides, kas saistīti ar attiecīgo s
 
 ## Ekrānšāviņi ar paskaidrojumiem
 ![pierakstisana](https://github.com/user-attachments/assets/dc6ee979-c94e-41c0-ac45-7cc5d66f89f7)
+
 Autorizācijas lapa - Lietotājs var piereģistrēties, pieslēgties klāt kontam caur e-pastu un GitHub
 
 ![tiesraidesEkrans](https://github.com/user-attachments/assets/37249ff4-6b04-40d2-be4e-545de6cc400a)
+
 Tiešraides lapa - Rādās informācija par izvēlēto spēli: spēles ieraksts, spēles rezultāts, kādas komandas spēlē, kāda ir spēles gaita un spēles protokols
 
 ![galvenaisEkransTumss](https://github.com/user-attachments/assets/b3f6ae39-07f6-4900-affa-f49544af7a20)
+
 Galvenais ekrāns un pārējie sporta veidu ekrāni (Tumšajā versijā) - Tiek parādīti tādi kā ieskati uz tiešraidēm jeb spēles info, uz rakstiem. Uzklikšķinot uz kādu no tiešraidēm, atveras tiešraides lapa, un atverot rakstu, atveras rakstu lapa 
 
 ![galvenaisEkransGaiss](https://github.com/user-attachments/assets/9cff11f7-b7ed-41bc-b4cf-67af872a4263)
+
 Tas pats, kas "Galvenais ekrāns un pārējie sporta veidu ekrāni", bet gaišajā versijā
 
 ![raksts](https://github.com/user-attachments/assets/06cb1b73-962e-448e-89df-0e1370eaf7e3)
+
 Rakstu lapa - Parādās informācija par izvēlēto raksut: raksta nosaukums, kas to rakstu publicēja, kad tika publicēts un raksta apraksts 
 
 ![profils](https://github.com/user-attachments/assets/fcdf0fa9-9f91-411c-ba4c-5464c51efe34)
+
 Profila lapa - Parādās aktuālākā informācija par lietotāju, var rediģēt šo informāciju
 
 ![profilaRedigesana](https://github.com/user-attachments/assets/f6f554b3-63c1-4142-bf72-ed480512f827)
+
 Profila rediģēšana - Var ievadīt nepieciešamos datus un profila bildi
 
 ## Izmantotās tehnoloģijas un bibliotēkas

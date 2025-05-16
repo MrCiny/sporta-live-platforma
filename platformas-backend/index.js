@@ -18,6 +18,7 @@ app.post('/create-livestream', async (req, res) => {
   try {
     const stream = await mux.video.liveStreams.create({
       playback_policy: ['public'],
+      reconnect_window: 600,
       new_asset_settings: { playback_policy: ['public'] },
     });
     res.json(stream);

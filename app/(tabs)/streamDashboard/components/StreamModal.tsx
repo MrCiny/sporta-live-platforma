@@ -62,6 +62,7 @@ export default function StreamModal({ visible, stream, onClose }: Props) {
           });
     
           const muxStream = await response.json();
+          console.log(muxStream)
         
           const insertPayload = {
             ...payload,
@@ -119,7 +120,7 @@ export default function StreamModal({ visible, stream, onClose }: Props) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(202, 168, 168, 0.5)",
     justifyContent: "center",
     alignItems: "center",
   },

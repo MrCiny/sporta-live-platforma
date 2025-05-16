@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useVideoPlayer, VideoView } from 'expo-video';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform } from "react-native";
 import MainHeader from "@/components/mainHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
 import { useTheme } from "@/components/themeContext";
 import { getStyles } from "@/styles/styles";
-import MuxPlayer from "@mux/mux-player-react";
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEvent } from "expo";
 
 export default function streams() {
     const info = useLocalSearchParams();
@@ -51,23 +51,57 @@ export default function streams() {
         getSpelesInfo();
     }, [info.id])
 
+    const videoSource = `https://stream.mux.com/${streamId}.m3u8`
+    const player = useVideoPlayer(videoSource, player => {
+        player.play();
+    });
+
+    const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+
+    VideoPlayer = () => {
+        if (Platform.OS === "web"){
+            var MuxPlayer = require("@mux/mux-player-react");
+            
+            return (
+                <MuxPlayer.default
+                    playbackId={streamId}
+                />
+            )
+        }
+        else {
+            return <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
+        }
+    }
+
     return (
         <>
         <MainHeader />
         <SafeAreaView style={styles.safeArea}>
             {!loading &&
                 <ScrollView style={styles.streamContainer}>
-                    
-                        <MuxPlayer
-                            playbackId={streamId}
-                            metadata={{
-                                video_id: "video-id-54321",
-                                video_title: "Test video title",
-                                viewer_user_id: "user-id-007",
+                    <SafeAreaView>
+                        <VideoPlayer />
+                        {/*<MuxVideo
+                            ref={video}
+                            style={{ width: '100%', height: '100%' }}
+                            resizeMode="contain"
+                            useNativeControls
+                            usePoster
+                            source={{ uri: `https://stream.mux.com/${streamId}.m3u8` }}
+                            muxOptions={{
+                                application_name: Platform.OS == 'ios' ? 'Pals iOS' : 'Pals Android',
+                                application_version: '1.0.0',
+                                data: {
+                                    env_key: '<ENV KEY>',
+                                    video_id: videoInfo.id,
+                                    video_title: videoInfo.id,
+                                    viewer_user_id: user.id,
+                                    video_duration: videoInfo.duration,
+                                    player_name: 'Expo AV Video Player - Mobile app',
+                                },
                             }}
-                        />
-                            {/*<VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />*/}
-                 
+                        />*/}
+                        </SafeAreaView>
 
                     <Text style={styles.matchInfo}>{spelesInfo[0].date} | {spelesInfo[0].laiks}</Text>
 

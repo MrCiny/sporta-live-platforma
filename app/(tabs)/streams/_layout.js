@@ -1,5 +1,9 @@
-import { Slot } from "expo-router";
+import { Slot, Stack, Tabs } from "expo-router";
 
 export default function StreamLayout() {
-  return <Slot />;
+  return (
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+    );
 }

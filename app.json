@@ -29,6 +29,7 @@
       "expo-router",
       "expo-secure-store",
       "expo-video"
+      
     ],
     "extra": {
       "router": {

@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useVideoPlayer, VideoView } from 'expo-video';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform } from "react-native";
 import MainHeader from "@/components/mainHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
 import { useTheme } from "@/components/themeContext";
 import { getStyles } from "@/styles/styles";
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEvent } from "expo";
 
 export default function streams() {
     const info = useLocalSearchParams();
     const [loading, setLoading] = useState(true);
     const [spelesInfo, setSpelesInfo] = useState(null);
+    const [streamId, setStreamId] = useState("");
     const [komandasInfo, setKomandasInfo] = useState([]);
     const [spelesGaita, setSpelesGaita] = useState(false);
     const { theme, toggleTheme } = useTheme();
@@ -28,6 +30,12 @@ export default function streams() {
     
                 setSpelesInfo(data);
                 getKomandasInfo(data);
+
+            let { data: Tiesraide, err } = await supabase
+                .from('Tiesraide')
+                .select('stream_id')
+                .eq("speles_id", info.id)
+                setStreamId(Tiesraide[0].stream_id);
         };
 
         async function getKomandasInfo(spele) {
@@ -43,9 +51,27 @@ export default function streams() {
         getSpelesInfo();
     }, [info.id])
 
-    const player = useVideoPlayer(loading ? "" : spelesInfo[0].tiesraides_URL, player => {
-        player.loop = true;
-      });
+    const videoSource = `https://stream.mux.com/${streamId}.m3u8`
+    const player = useVideoPlayer(videoSource, player => {
+        player.play();
+    });
+
+    const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+
+    VideoPlayer = () => {
+        if (Platform.OS === "web"){
+            var MuxPlayer = require("@mux/mux-player-react");
+            
+            return (
+                <MuxPlayer.default
+                    playbackId={streamId}
+                />
+            )
+        }
+        else {
+            return <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
+        }
+    }
 
     return (
         <>
@@ -53,9 +79,29 @@ export default function streams() {
         <SafeAreaView style={styles.safeArea}>
             {!loading &&
                 <ScrollView style={styles.streamContainer}>
-                    <View style={styles.videoContainer}>
-                            <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
-                    </View>
+                    <SafeAreaView>
+                        <VideoPlayer />
+                        {/*<MuxVideo
+                            ref={video}
+                            style={{ width: '100%', height: '100%' }}
+                            resizeMode="contain"
+                            useNativeControls
+                            usePoster
+                            source={{ uri: `https://stream.mux.com/${streamId}.m3u8` }}
+                            muxOptions={{
+                                application_name: Platform.OS == 'ios' ? 'Pals iOS' : 'Pals Android',
+                                application_version: '1.0.0',
+                                data: {
+                                    env_key: '<ENV KEY>',
+                                    video_id: videoInfo.id,
+                                    video_title: videoInfo.id,
+                                    viewer_user_id: user.id,
+                                    video_duration: videoInfo.duration,
+                                    player_name: 'Expo AV Video Player - Mobile app',
+                                },
+                            }}
+                        />*/}
+                        </SafeAreaView>
 
                     <Text style={styles.matchInfo}>{spelesInfo[0].date} | {spelesInfo[0].laiks}</Text>
 

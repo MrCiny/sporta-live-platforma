@@ -261,7 +261,7 @@ export const getStyles = (theme) => {
             padding: 15
         },
         videoContainer: { width: "100%", height: 200, backgroundColor: "black", marginBottom: 10 },
-        video: { width: "100%", height: "100%" },
+        video: { width: "100%", height: 200 },
         banner: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginBottom: 10 },
         teamLogo: { width: 80, height: 80, marginHorizontal: 5 },
         vsText: { fontSize: 24, fontWeight: "bold", color: colors.text },

@@ -7,11 +7,13 @@ import { useLocalSearchParams } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
 import { useTheme } from "@/components/themeContext";
 import { getStyles } from "@/styles/styles";
+import MuxPlayer from "@mux/mux-player-react";
 
 export default function streams() {
     const info = useLocalSearchParams();
     const [loading, setLoading] = useState(true);
     const [spelesInfo, setSpelesInfo] = useState(null);
+    const [streamId, setStreamId] = useState("");
     const [komandasInfo, setKomandasInfo] = useState([]);
     const [spelesGaita, setSpelesGaita] = useState(false);
     const { theme, toggleTheme } = useTheme();
@@ -28,6 +30,12 @@ export default function streams() {
     
                 setSpelesInfo(data);
                 getKomandasInfo(data);
+
+            let { data: Tiesraide, err } = await supabase
+                .from('Tiesraide')
+                .select('stream_id')
+                .eq("speles_id", info.id)
+                setStreamId(Tiesraide[0].stream_id);
         };
 
         async function getKomandasInfo(spele) {
@@ -43,19 +51,23 @@ export default function streams() {
         getSpelesInfo();
     }, [info.id])
 
-    const player = useVideoPlayer(loading ? "" : spelesInfo[0].tiesraides_URL, player => {
-        player.loop = true;
-      });
-
     return (
         <>
         <MainHeader />
         <SafeAreaView style={styles.safeArea}>
             {!loading &&
                 <ScrollView style={styles.streamContainer}>
-                    <View style={styles.videoContainer}>
-                            <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
-                    </View>
+                    
+                        <MuxPlayer
+                            playbackId={streamId}
+                            metadata={{
+                                video_id: "video-id-54321",
+                                video_title: "Test video title",
+                                viewer_user_id: "user-id-007",
+                            }}
+                        />
+                            {/*<VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />*/}
+                 
 
                     <Text style={styles.matchInfo}>{spelesInfo[0].date} | {spelesInfo[0].laiks}</Text>
 

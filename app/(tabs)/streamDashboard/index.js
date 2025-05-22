@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
 import MainHeader from "@/components/mainHeader";
 import { useTheme } from "@/components/themeContext";
-import { getStyles } from "@/styles/styles";
+import { getDashboardStyles, getStyles } from "@/styles/styles";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import StreamModal from "./components/StreamModal";
 
@@ -15,6 +15,7 @@ export default function StreamDashboard() {
   const [editingStream, setEditingStream] = useState(null);
   const { theme } = useTheme();
   const styles = getStyles(theme);
+  const dashboardStyles = getDashboardStyles(theme);
 
   useEffect(() => {
     fetchStreams();
@@ -80,16 +81,3 @@ export default function StreamDashboard() {
     </SafeAreaView>
     );
 }
-
-const dashboardStyles = StyleSheet.create({
-  headerRow: { flexDirection: "row", justifyContent: "space-between", padding: 16 },
-  addButton: { backgroundColor: "#007bff", padding: 8, borderRadius: 6 },
-  addButtonText: { color: "#fff" },
-  card: { backgroundColor: "#1e1e1e", padding: 12, marginBottom: 12, borderRadius: 10, flexDirection: "row", alignItems: "center" },
-  thumbnail: { width: 80, height: 80, borderRadius: 8, marginRight: 12 },
-  info: { flex: 1 },
-  title: { fontSize: 16, fontWeight: "600", color: "#fff" },
-  subtitle: { fontSize: 12, color: "#ccc" },
-  status: { marginTop: 4, fontSize: 13 },
-  actions: { gap: 12 },
-});

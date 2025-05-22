@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, Switch, StyleSheet, Modal, TouchableWithoutFeedback, Keyboard, Platform, KeyboardAvoidingView } from "react-native";
+import { View, Text, TextInput, Button, Switch, StyleSheet, Modal, TouchableWithoutFeedback, Keyboard, Platform, KeyboardAvoidingView, TouchableOpacity, Image } from "react-native";
 import { supabase } from "@/lib/supabase-client";
 import { Picker } from '@react-native-picker/picker';
+import { useTheme } from "@/components/themeContext";
+import { getModalStyles } from "@/styles/styles";
+import * as ImagePicker from 'expo-image-picker';
 
 type Livestream = {
   id: number;
@@ -24,6 +27,8 @@ export default function StreamModal({ visible, stream, onClose }: Props) {
   const [spelesId, setSpelesId] = useState("");
   const [streamId, setStreamId] = useState("");
   const [sport, setSport] = useState<Livestream["sport"]>("football");
+  const { theme } = useTheme();
+  const modalStyles = getModalStyles(theme);
 
   useEffect(() => {
     if (stream) {
@@ -81,35 +86,43 @@ export default function StreamModal({ visible, stream, onClose }: Props) {
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
+      <View style={ modalStyles.overlay}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} />
         </TouchableWithoutFeedback>
 
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.dialogContainer}>
-          <View style={styles.dialog}>
-          <Text style={styles.title}>{stream ? "Edit Livestream" : "Create Livestream"}</Text>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={modalStyles.dialogContainer}>
+          <View style={modalStyles.dialog}>
+            <Text style={modalStyles.title}>{stream ? "Edit Livestream" : "Create Livestream"}</Text>
+            <View style={modalStyles.card}>
+              <TouchableOpacity>
+                <View>
+                  <Image source={{ uri: image }} resizeMode="contain"  style={{ width: 240, height: 135 }}/>
+                </View>
+              </TouchableOpacity>
+              <View>
+                <TextInput placeholder="Title" value={title} onChangeText={setTitle} style={modalStyles.input} />
+              {/*<TextInput placeholder="Image URL" value={image} onChangeText={setImage} style={modalStyles.input} />*/}
+              <TextInput placeholder="Spēles ID" value={spelesId} onChangeText={setSpelesId} keyboardType="numeric" style={modalStyles.input} />
 
-          <TextInput placeholder="Title" value={title} onChangeText={setTitle} style={styles.input} />
-          <TextInput placeholder="Image URL" value={image} onChangeText={setImage} style={styles.input} />
-          <TextInput placeholder="Spēles ID" value={spelesId} onChangeText={setSpelesId} keyboardType="numeric" style={styles.input} />
+              <Text style={{ marginTop: 12 }}>Sport</Text>
+              <Picker
+                selectedValue={sport}
+                onValueChange={(value) => setSport(value)}
+                style={{ height: 50 }}
+              >
+                <Picker.Item label="Futbols" value="football" />
+                <Picker.Item label="Basketbols" value="basketball" />
+                <Picker.Item label="Hokejs" value="hockey" />
+                <Picker.Item label="Volejbols" value="volleyball" />
+              </Picker>
+              </View>
+            </View>
 
-          <Text style={{ marginTop: 12 }}>Sport</Text>
-          <Picker
-            selectedValue={sport}
-            onValueChange={(value) => setSport(value)}
-            style={{ height: 50 }}
-          >
-            <Picker.Item label="Futbols" value="football" />
-            <Picker.Item label="Basketbols" value="basketball" />
-            <Picker.Item label="Hokejs" value="hockey" />
-            <Picker.Item label="Volejbols" value="volleyball" />
-          </Picker>
-
-          <View style={styles.buttonRow}>
-            <Button title="Cancel" onPress={onClose} color="gray" />
-            <Button title="Save" onPress={handleSave} />
-          </View>
+            <View style={modalStyles.buttonRow}>
+              <Button title="Cancel" onPress={onClose} color="gray" />
+              <Button title="Save" onPress={handleSave} />
+            </View>
           </View>
         </KeyboardAvoidingView>
       </View>

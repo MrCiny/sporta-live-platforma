@@ -52,9 +52,7 @@ export default function streams() {
     }, [info.id])
 
     const videoSource = `https://stream.mux.com/${streamId}.m3u8`
-    const player = useVideoPlayer(videoSource, player => {
-        player.play();
-    });
+    const player = useVideoPlayer(videoSource);
 
     const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
@@ -81,41 +79,20 @@ export default function streams() {
                 <ScrollView style={styles.streamContainer}>
                     <SafeAreaView>
                         <VideoPlayer />
-                        {/*<MuxVideo
-                            ref={video}
-                            style={{ width: '100%', height: '100%' }}
-                            resizeMode="contain"
-                            useNativeControls
-                            usePoster
-                            source={{ uri: `https://stream.mux.com/${streamId}.m3u8` }}
-                            muxOptions={{
-                                application_name: Platform.OS == 'ios' ? 'Pals iOS' : 'Pals Android',
-                                application_version: '1.0.0',
-                                data: {
-                                    env_key: '<ENV KEY>',
-                                    video_id: videoInfo.id,
-                                    video_title: videoInfo.id,
-                                    viewer_user_id: user.id,
-                                    video_duration: videoInfo.duration,
-                                    player_name: 'Expo AV Video Player - Mobile app',
-                                },
-                            }}
-                        />*/}
-                        </SafeAreaView>
+                    </SafeAreaView>
 
                     <Text style={styles.matchInfo}>{spelesInfo[0].date} | {spelesInfo[0].laiks}</Text>
-
 
                     <View style={styles.scoreContainer}>
                         <Text style={styles.teamName}>{komandasInfo[0].nosaukums}</Text>
                         <Text style={styles.score}>{spelesInfo[0].rezultats}</Text>
-                        <Text style={styles.teamName}>{komandasInfo[1].nosaukums}</Text>
+                        <Text style={styles.teamName}>{komandasInfo[spelesInfo[0].komanda1 === spelesInfo[0].komanda2 ? 0 : 1].nosaukums}</Text>
                     </View>
 
                     <View style={styles.banner}>
                         <Image resizeMode={"contain"} source={{ uri: komandasInfo[0].logo }} style={styles.teamLogo} />
                         <Text style={styles.vsText}>VS</Text>
-                        <Image resizeMode={"contain"} source={{ uri: komandasInfo[1].logo }} style={styles.teamLogo} />
+                        <Image resizeMode={"contain"} source={{ uri: komandasInfo[spelesInfo[0].komanda1 === spelesInfo[0].komanda2 ? 0 : 1].logo }} style={styles.teamLogo} />
                     </View>
 
                     <View style={styles.streamButtonContainer}>

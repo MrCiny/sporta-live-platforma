@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Platform } from "react-native";
 import MainHeader from "@/components/mainHeader";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
 import { useTheme } from "@/components/themeContext";
 import { getStyles } from "@/styles/styles";
+import { SearchBar } from '@rneui/themed';
 
 
 export default function Sports() {
     const [loading, setLoading] = useState(true)
     const [sportsNews, setSportsNews] = useState([]);
     const [liveStreams, setLiveStreams] = useState([]);
+    const [search, setSearch] = useState("");
     const { theme, toggleTheme } = useTheme();
             
     const styles = getStyles(theme);
@@ -38,6 +40,10 @@ export default function Sports() {
 
         getSportaZinas();
     }, [])
+
+    const updateSearch = (search) => {
+        setSearch(search);
+    };
 
     const renderLiveStreams = () => (
         <>
@@ -74,6 +80,15 @@ export default function Sports() {
 
     const renderListHeader = () => (
         <View style={styles.listHeader}>
+            <SearchBar
+                placeholder="Type Here..."
+                onChangeText={updateSearch}
+                value={search}
+                round
+                platform={Platform.OS === "web" ? "default" : Platform.OS === "android" ? "android" : "iOS"}
+                lightTheme={theme === "light"}
+                containerStyle={{ backgroundColor: "transparent", border: "transparent"}}
+            />
             {renderLiveStreams()}
             <Text style={styles.headerText}>Sporta ziņas</Text>
         </View>

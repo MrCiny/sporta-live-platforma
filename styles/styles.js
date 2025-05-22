@@ -17,8 +17,7 @@ export const getStyles = (theme) => {
         },
         safeArea: { 
             flex: 1, 
-            backgroundColor: 
-            colors.safeArea 
+            backgroundColor: colors.safeArea 
         },
         headerTextContainer: { 
             width: "100%", 
@@ -258,14 +257,13 @@ export const getStyles = (theme) => {
             flex: 1, 
             backgroundColor: 
             colors.safeArea,
-            padding: 15
         },
         videoContainer: { width: "100%", height: 200, backgroundColor: "black", marginBottom: 10 },
         video: { width: "100%", height: 200 },
         banner: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginBottom: 10 },
         teamLogo: { width: 80, height: 80, marginHorizontal: 5 },
         vsText: { fontSize: 24, fontWeight: "bold", color: colors.text },
-        matchInfo: { textAlign: "center", fontSize: 14, color: "white", backgroundColor: colors.header, padding: 5, borderRadius: 5 },
+        matchInfo: { textAlign: "center", fontSize: 14, color: "white", backgroundColor: colors.header, padding: 5, borderRadius: 5, marginTop: 10 },
         scoreContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 15 },
         teamName: { fontSize: 18, fontWeight: "bold", textAlign: "center", flex: 1, color: colors.text },
         score: { fontSize: 32, fontWeight: "bold", textAlign: "center", flex: 1, color: colors.text },
@@ -278,6 +276,75 @@ export const getStyles = (theme) => {
         eventCard: { backgroundColor: colors.eventCard, padding: 10, borderRadius: 5, marginBottom: 10 },
         eventText: { fontSize: 16, fontWeight: "bold", color: colors.text},
         eventDetails: { fontSize: 14, color: colors.subtitle, marginTop: 5 },
-        input: { color: colors.text, textAlign: "center"}
+        input: { color: colors.text, textAlign: "center"},
     });
 };
+
+export const getDashboardStyles = (theme) => {
+    const colors = theme === "dark" ? darkTheme : lightTheme;
+    
+    return StyleSheet.create({
+        headerRow: { flexDirection: "row", justifyContent: "space-between", padding: 16 },
+        addButton: { backgroundColor: "#007bff", padding: 8, borderRadius: 6 },
+        addButtonText: { color: "#fff" },
+        card: { backgroundColor: colors.dashboardCard, padding: 12, marginBottom: 12, borderRadius: 10, flexDirection: "row", alignItems: "center" },
+        thumbnail: { width: 160, height: 90, borderRadius: 8, marginRight: 12 },
+        info: { flex: 1 },
+        title: { fontSize: 16, fontWeight: "600", color: colors.text },
+        subtitle: { fontSize: 12, color: colors.subtitle },
+        status: { marginTop: 4, fontSize: 13 },
+        actions: { gap: 12 },
+    });
+}
+
+export const getModalStyles = (theme) => {
+    const colors = theme === "dark" ? darkTheme : lightTheme;
+    return StyleSheet.create({
+        card: { flexDirection: "row", alignItems: "center", display: "inline-flex"  },
+        overlay: {
+            flex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        dialogContainer: {
+            width: "55%",
+        },
+        dialog: {
+            backgroundColor: colors.background,
+            padding: 20,
+            borderRadius: 12,
+            elevation: 5,
+        },
+        title: {
+            fontSize: 18,
+            fontWeight: "600",
+            color: colors.text,
+            marginBottom: 12,
+        },
+        input: {
+            height: 48,
+            paddingHorizontal: 12,
+            borderWidth: 1,
+            borderColor: colors.inputBorder,
+            borderRadius: 8,
+            backgroundColor: colors.inputBg,
+            fontSize: 16,
+            marginBottom: 12,
+            marginTop: 12,
+            width: "auto",
+            color: colors.text
+        },
+        switchRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginVertical: 12,
+        },
+        buttonRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 16,
+        },
+    });
+}

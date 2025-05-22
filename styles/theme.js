@@ -11,7 +11,10 @@ export const lightTheme = {
     userNameText: "#666",
     emailText: "#444",
     joinDateText: "#777",
-    eventcard: "#F5F7FA"
+    eventCard: "#F5F7FA",
+    dashboardCard: "#EBEBEB",
+    inputBg: "#fff",
+    inputBorder: "#ccc"
 };
 
 export const darkTheme = {
@@ -27,5 +30,8 @@ export const darkTheme = {
     userNameText: "#919191",
     emailText: "#d1d1d1",
     joinDateText: "#8a8888",
-    eventCard: "#1f1f1f"
+    eventCard: "#1f1f1f",
+    dashboardCard: "#1e1e1e",
+    inputBg: "#303030",
+    inputBorder: "#404040"
 };

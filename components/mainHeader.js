@@ -14,43 +14,54 @@ export default function MainHeader() {
     const styles = getStyles(theme);
     const [pic, setPic] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
     const [role, setRole] = useState("User")  
-    useEffect(() => {
-        async function getPicture(avatar_url) {
-            const isValidUrl = (url) => {
-                try {
-                  new URL(url);
-                  return true;
-                } catch (_) {
-                  return false;
-                }
-              };
-      
-              if (!isValidUrl(avatar_url)) {
-                const { data, error } = await supabase
-                    .storage
-                    .from("avatars")
-                    .getPublicUrl(avatar_url);
-      
-                if (!error) {
-                  avatar_url = data.publicUrl;
-                }
-              }
-            setPic(avatar_url)
+    useEffect(() => {        
+        checkAccess()
+      }, []);
+
+    const checkAccess = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+  
+      if (!user) {
+        router.replace("/(auth)/login");
+        return;
+      }
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        const { data, error } = await supabase
+                .from("Users")
+                .select("role,image")
+                .eq("user_id", user.id)
+                .single();
+
+        if (!error) {
+          setPic(data.image)
+          setRole(data.role)
+          getPicture(data.image)
         }
-        supabase.auth.getUser().then(async ({ data: { user } }) => {
+      });
+    }
+
+    async function getPicture(avatar_url) {
+      const isValidUrl = (url) => {
+          try {
+            new URL(url);
+            return true;
+          } catch (_) {
+            return false;
+          }
+        };
+
+        if (!isValidUrl(avatar_url)) {
           const { data, error } = await supabase
-                  .from("Users")
-                  .select("role,image")
-                  .eq("user_id", user.id)
-                  .single();
+              .storage
+              .from("avatars")
+              .getPublicUrl(avatar_url);
 
           if (!error) {
-            setPic(data.image)
-            setRole(data.role)
-            getPicture(data.image)
+            avatar_url = data.publicUrl;
           }
-        });
-      }, []);
+        }
+      setPic(avatar_url)
+    }
 
     const redirectSportDash = () => {
         router.replace("/(tabs)/sportsDashboard");

@@ -5,6 +5,7 @@ import { useTheme } from '@/components/themeContext';
 import { getDashboardStyles, getStyles } from '@/styles/styles';
 import MainHeader from '@/components/mainHeader';
 import GameModal from './components/GameModal';
+import { router } from 'expo-router';
 
 export default function GameDashboard() {
   const [games, setGames] = useState([]);
@@ -29,8 +30,28 @@ export default function GameDashboard() {
   const dashboardStyles = getDashboardStyles(theme);
 
   useEffect(() => {
+    checkAccess();
     refreshData();
   }, []);
+
+  const checkAccess = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.replace("/(auth)/login");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("Users")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+
+      if (data?.role !== "Admin") {
+        router.replace("/(tabs)/sports/");
+      }
+  }
 
   const refreshData = async () => {
     fetchGames();

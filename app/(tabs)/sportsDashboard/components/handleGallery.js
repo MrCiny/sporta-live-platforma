@@ -26,9 +26,12 @@ export async function handleGallery(title) {
 
 export async function handleImageUpload(title, imageUri) {
     if (imageUri) {
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        
         const { data, error } = await supabase.storage
         .from(title)
-        .upload(`${Date.now()}`, { uri: imageUri }, { contentType: 'image/png' });
+        .upload(`${Date.now()}`, { uri: blob }, { contentType: 'image/png' });
 
         if (error) {
             alert("Error uploading image", error.message);

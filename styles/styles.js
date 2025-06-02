@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { lightTheme, darkTheme } from "./theme";
 import { color } from "react-native-elements/dist/helpers";
 
@@ -297,10 +297,17 @@ export const getDashboardStyles = (theme) => {
     });
 }
 
+const { width } = Dimensions.get("window");
+const isSmallDevice = width < 600;
+
 export const getModalStyles = (theme) => {
     const colors = theme === "dark" ? darkTheme : lightTheme;
     return StyleSheet.create({
-        card: { flexDirection: "row", alignItems: "center", display: "inline-flex"  },
+        card: { 
+            flexDirection: isSmallDevice ? "column" : "row", 
+            alignItems: "center", 
+            gap: 12  
+        },
         overlay: {
             flex: 1,
             backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -308,13 +315,18 @@ export const getModalStyles = (theme) => {
             alignItems: "center",
         },
         dialogContainer: {
-            width: "55%",
+            width: "90%",
+            maxWidth: 700,
+            maxHeight: "95%",
+            paddingHorizontal: 10,
         },
         dialog: {
             backgroundColor: colors.background,
             padding: 20,
             borderRadius: 12,
             elevation: 5,
+            overflow: "auto",
+            width: isSmallDevice ?  "auto" : 800
         },
         title: {
             fontSize: 18,
@@ -345,6 +357,13 @@ export const getModalStyles = (theme) => {
             flexDirection: "row",
             justifyContent: "space-between",
             marginTop: 16,
+        },
+        imageContainer: {
+            width: isSmallDevice ? "100%" : 480,
+            height: isSmallDevice ? 135 : 270,
+            alignSelf: "center",
+            aspectRatio: 16/9,
+            marginBottom: isSmallDevice ? 16 : 0,
         },
     });
 }

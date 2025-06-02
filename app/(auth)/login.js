@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
-import { Alert, StyleSheet, View } from 'react-native'
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
 import { supabase } from '@/lib/supabase-client'
 import { Button, Input, Icon } from '@rneui/themed'
+import { Text } from 'react-native-elements';
 
 export default function Auth() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', error: false })
+
+  function showSnackbar(message, isError = false) {
+    setSnackbar({ visible: true, message, error: isError })
+  }
 
   async function signInWithEmail() {
     setLoading(true)
@@ -15,14 +21,14 @@ export default function Auth() {
       password: password,
     })
 
-    if (error) Alert.alert(error.message)
+    if (error) showSnackbar(error.message, true)
       setLoading(false)
   }
 
   async function signUpWithEmail() {
     setLoading(true)
     const {
-      data: { session },
+      data,
       error,
     } = await supabase.auth.signUp({
       email: email,
@@ -34,8 +40,12 @@ export default function Auth() {
       }
     })
 
-    if (error) Alert.alert(error.message)
-    if (!session) Alert.alert('Please check your inbox for email verification!')
+    if(data.user){
+        await supabase.from("Users").insert({username: email, email: email, user_id: data.user.id })
+      }
+
+    if (error) showSnackbar(error.message, true)
+    if (!data.session) Alert.alert('Please check your inbox for email verification!')
       setLoading(false)
   }
 
@@ -45,64 +55,110 @@ export default function Auth() {
       provider: 'github',
     })
 
-    if (error) Alert.alert(error.message)
+    if (error) showSnackbar(error.message, true)
       setLoading(false)
   }
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.wrapper}
+    >
+      <View style={styles.container}>
         <Input
           label="Email"
-          leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-          onChangeText={(text) => setEmail(text)}
-          value={email}
           placeholder="email@address.com"
-          autoCapitalize={'none'}
+          autoCapitalize="none"
+          leftIcon={{ type: 'font-awesome', name: 'envelope', color: '#999' }}
+          value={email}
+          onChangeText={setEmail}
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.inputText}
         />
-      </View>
-      <View style={styles.verticallySpaced}>
         <Input
           label="Password"
-          leftIcon={{ type: 'font-awesome', name: 'lock' }}
-          onChangeText={(text) => setPassword(text)}
+          placeholder="••••••••"
+          secureTextEntry
+          autoCapitalize="none"
+          leftIcon={{ type: 'font-awesome', name: 'lock', color: '#999' }}
           value={password}
-          secureTextEntry={true}
-          placeholder="Password"
-          autoCapitalize={'none'}
+          onChangeText={setPassword}
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.inputText}
         />
-      </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
-      </View>
-      <View style={styles.verticallySpaced}>
         <Button
-          title="GitHub"
-          buttonStyle={{ backgroundColor: 'rgba(39, 39, 39, 1)' }}
-          titleStyle={{marginHorizontal: 5}}
-          disabled={loading} 
-          onPress={() => signInWithGitHub()} 
-          icon={<Icon name="github" type="font-awesome" color="#FFF" />}
+          title="Sign In"
+          loading={loading}
+          onPress={signInWithEmail}
+          buttonStyle={styles.button}
+          containerStyle={styles.buttonContainer}
         />
+        <Button
+          title="Sign Up"
+          type="outline"
+          onPress={signUpWithEmail}
+          disabled={loading}
+          titleStyle={{ color: '#555' }}
+          buttonStyle={styles.outlineButton}
+          containerStyle={styles.buttonContainer}
+        />
+        {Platform.OS === "web" && (
+          <Button
+            title="Continue with GitHub"
+            icon={<Icon name="github" type="font-awesome" color="#fff" />}
+            iconRight
+            onPress={signInWithGitHub}
+            disabled={loading}
+            buttonStyle={styles.githubButton}
+            containerStyle={styles.buttonContainer}
+          />
+        )}
+        {snackbar.error && (
+          <Text style={{color: "red"}}>
+            {snackbar.message}
+          </Text>
+        )}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#f7f7f7',
+    padding: 20,
+  },
   container: {
-    marginTop: 40,
-    padding: 12,
+    backgroundColor: '#fff',
+    padding: 25,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 12,
+    elevation: 6,
   },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: 'stretch',
+  inputContainer: {
+    marginBottom: 15,
   },
-  mt20: {
-    marginTop: 20,
+  inputText: {
+    paddingHorizontal: 10,
+  },
+  button: {
+    backgroundColor: '#007bff',
+    borderRadius: 10,
+  },
+  outlineButton: {
+    borderColor: '#ccc',
+    borderRadius: 10,
+  },
+  githubButton: {
+    backgroundColor: '#333',
+    borderRadius: 10,
+  },
+  buttonContainer: {
+    marginTop: 10,
   },
 })

@@ -46,6 +46,7 @@ export default function Profile() {
           avatar_url: avatar_url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
           username: user.user_metadata?.username || "",
           created_at: user.created_at,
+          id: user.id
         });
       } else {
         Alert.alert("Error Accessing User");
@@ -55,7 +56,6 @@ export default function Profile() {
   }, []);
 
   const handleUpdateProfile = async () => {
-    // If the user picked an image, upload it to Supabase storage and get the URL
     let avatarUrl = userData.avatar_url;
     if (imageUri) {
       const { data, error } = await supabase.storage
@@ -77,10 +77,13 @@ export default function Profile() {
         avatar_url: avatarUrl,
       },
     });
+    
+    await supabase.from("Users").update({ username: userData.username, image: avatarUrl }).eq("user_id", userData.id)
 
     if (error) {
       Alert.alert("Error Updating Profile", error.message);
     } else {
+
       Alert.alert("Profile Updated Successfully");
       setIsEditing(false);
     }
@@ -121,7 +124,6 @@ export default function Profile() {
                 <TouchableOpacity onPress={handleChooseImage} style={styles.buttonContainer}>
                   <Text style={styles.buttonText}>CHANGE PROFILE PHOTO</Text>
                 </TouchableOpacity>
-                <TextInput style={styles.input} value={userData.avatar_url} onChangeText={(text) => setUserData({ ...userData, avatar_url: text })} placeholder="Avatar URL" />
                 <TouchableOpacity onPress={handleUpdateProfile} style={styles.buttonContainer}>
                   <Text style={styles.buttonText}>SAVE</Text>
                 </TouchableOpacity>

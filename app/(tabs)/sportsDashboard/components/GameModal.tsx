@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Modal, TouchableWithoutFeedback, Keyboard, Platform, KeyboardAvoidingView, TouchableOpacity, Image } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Modal, TouchableWithoutFeedback, Keyboard, Platform, KeyboardAvoidingView, TouchableOpacity, Image, ScrollView } from "react-native";
 import { supabase } from "@/lib/supabase-client";
 import { getModalStyles } from "@/styles/styles";
 import { useTheme } from "@/components/themeContext";
@@ -40,6 +40,7 @@ export default function GameModal({ visible, game, stream, onClose, onFinish }: 
   const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
   const [sport, setSport] = useState("");
+  const [komandas, setKomandas] = useState<{ id: number; nosaukums: string }[]>([])
   const { theme } = useTheme();
   const modalStyles = getModalStyles(theme);
 
@@ -52,6 +53,7 @@ export default function GameModal({ visible, game, stream, onClose, onFinish }: 
       setImage(stream.image);
       setTitle(stream.title);
       setSport(stream.sport);
+      getKomandas()
     } else {
       setKomanda1(1);
       setKomanda2(1);
@@ -64,6 +66,7 @@ export default function GameModal({ visible, game, stream, onClose, onFinish }: 
   }, [game]);
 
   const handleSave = async () => {
+    console.log(image)
     let imageUri = await handleImageUpload("thumbnail", image);
     let finalImage = await getImage("thumbnail", imageUri)
     const gamePayload = { komanda1, komanda2, vieta };
@@ -106,12 +109,20 @@ export default function GameModal({ visible, game, stream, onClose, onFinish }: 
   const handleImageChoose = async () => {
     let imageUri = await handleGallery();
     if (await imageUri) {
-      console.log(imageUri);
       setImage(imageUri ?? "");
     }
   }
 
+  const getKomandas = async () => {
+    const {data: komanda, error } = await supabase.from("Komanda").select('id,nosaukums').eq('sport', stream?.sport)
+    if (error)
+      console.log(error.message)
+    else
+      setKomandas(komanda)
+  }
+
   return (
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     <Modal visible={visible} transparent animationType="fade">
       <View style={modalStyles.overlay}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -124,7 +135,7 @@ export default function GameModal({ visible, game, stream, onClose, onFinish }: 
             <View style={modalStyles.card}>
               <TouchableOpacity style={{position: "static"}} onPress={() => handleImageChoose()}>
                 <View>
-                  <Image source={{ uri: image }} resizeMode="contain"  style={{ width: 480, height: 270 }}/>
+                  <Image source={{ uri: image }} resizeMode="contain" style={modalStyles.imageContainer}/>
                 </View>
               </TouchableOpacity>
               <View style={{ marginLeft: 20, position: "static"}}>
@@ -132,14 +143,15 @@ export default function GameModal({ visible, game, stream, onClose, onFinish }: 
                 <TextInput placeholder="Title" value={title} onChangeText={setTitle} style={modalStyles.input} />
                 <Text style={[modalStyles.title, { fontSize: 14, marginBottom: 0}]}>Komanda 1: </Text>
                 <Picker
-                style={modalStyles.input}
+                  style={modalStyles.input}
                   selectedValue={komanda1}
                   onValueChange={(itemValue, itemIndex) =>
                     setKomanda1(itemValue)
                   }
                 >
-                  <Picker.Item label={"FK Nīca/OtnakiMill"} value={1} />
-                  <Picker.Item label={"Riga FC"} value={2} />
+                  {komandas.map((item) => (
+                    <Picker.Item key={item.id} label={item.nosaukums} value={item.id} />
+                  ))}
                 </Picker>
                 {/*<TextInput placeholder="Komanda 1" value={komanda1} onChangeText={setKomanda1} style={modalStyles.input} />*/}
                 <Text style={[modalStyles.title, { fontSize: 14, marginBottom: 0}]}>Komanda 2: </Text>
@@ -151,8 +163,9 @@ export default function GameModal({ visible, game, stream, onClose, onFinish }: 
                     setKomanda2(itemValue)
                   }
                 >
-                  <Picker.Item label={"FK Nīca/OtnakiMill"} value={1} />
-                  <Picker.Item label={"Riga FC"} value={2} />
+                  {komandas.map((item) => (
+                    <Picker.Item key={item.id} label={item.nosaukums} value={item.id} />
+                  ))}
                 </Picker>
                 <Text style={[modalStyles.title, { fontSize: 14, marginBottom: 0}]}>Vieta: </Text>
                 <TextInput placeholder="Vieta" value={vieta} onChangeText={setVieta} style={modalStyles.input} />
@@ -180,5 +193,6 @@ export default function GameModal({ visible, game, stream, onClose, onFinish }: 
         </KeyboardAvoidingView>
       </View>
     </Modal>
+    </ScrollView>
   );
 }

@@ -93,7 +93,7 @@ function TabsWithTheme() {
           }}
         />
         <Tabs.Screen
-          name="settings"
+          name="sportsDashboard"
           options={{
             href: null
           }}

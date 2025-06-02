@@ -1,16 +1,20 @@
 import { Header } from "react-native-elements";
-import { Button, Icon, Avatar } from '@rneui/themed';
+import { Button, Icon, Avatar, Text } from '@rneui/themed';
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getStyles } from "@/styles/styles";
 import { useTheme } from "./themeContext";
+import { Platform, View } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
 
 export default function MainHeader() {
     const { theme, toggleTheme } = useTheme();
     const styles = getStyles(theme);
     const [pic, setPic] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
-      useEffect(() => {
+    const [role, setRole] = useState("User")  
+    useEffect(() => {
         async function getPicture(avatar_url) {
             const isValidUrl = (url) => {
                 try {
@@ -33,28 +37,27 @@ export default function MainHeader() {
               }
             setPic(avatar_url)
         }
-        supabase.auth.getUser().then(({ data: { user } }) => {
-          if (user.user_metadata.avatar_url) {
-            let avatar_url = user.user_metadata.avatar_url
-            getPicture(avatar_url)
+        supabase.auth.getUser().then(async ({ data: { user } }) => {
+          const { data, error } = await supabase
+                  .from("Users")
+                  .select("role,image")
+                  .eq("user_id", user.id)
+                  .single();
+
+          if (!error) {
+            setPic(data.image)
+            setRole(data.role)
+            getPicture(data.image)
           }
         });
       }, []);
 
-    const redirectSettings = () => {
-        router.replace("/(tabs)/settings");
+    const redirectSportDash = () => {
+        router.replace("/(tabs)/sportsDashboard");
     }
-    
-    const settingsButton = () => {
-        return (
-            <Button 
-                onPress={redirectSettings}
-                type="clear"
-                buttonStyle={styles.iconButton}
-            >
-                <Icon type="antdesign" name="setting" color="white"/>
-            </Button>
-        )
+
+    const redirectNewsDash = () => {
+      router.replace("/(tabs)/newsDashboard");
     }
 
     return (
@@ -69,6 +72,21 @@ export default function MainHeader() {
             }
             centerComponent={{ text: 'SportsLife LV', style: { color: '#fff', fontSize: 24, fontWeight: "bold", textAlign: "center" } }}
             rightComponent={
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                {role === "Admin" && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Button 
+                    onPress={redirectSportDash} 
+                    type="clear" 
+                    icon={<Icon type="master" name="scoreboard" color="#fff" />}
+                  />  
+                  <Button 
+                    onPress={redirectNewsDash} 
+                    type="clear" 
+                    icon={<Icon type="master" name="article" color="#fff" />}
+                  /> 
+                  </View>
+                )}
                 <Avatar
                     size={40}
                     rounded
@@ -76,6 +94,7 @@ export default function MainHeader() {
                     onPress={() => router.replace("/(tabs)/profile")}
                     containerStyle={styles.avatar}
                 />
+              </View>
             }   
         />
     );

@@ -54,7 +54,7 @@ export default function Profile() {
     }
     fetchUser();
   }, []);
-
+  
   const handleUpdateProfile = async () => {
     let avatarUrl = userData.avatar_url;
     if (imageUri) {

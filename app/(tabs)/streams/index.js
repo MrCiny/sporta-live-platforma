@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform } from "react-native";
 import MainHeader from "@/components/mainHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
 import { useTheme } from "@/components/themeContext";
 import { getStyles } from "@/styles/styles";
@@ -21,35 +21,45 @@ export default function streams() {
     const styles = getStyles(theme);
 
     useEffect(() => {
-        async function getSpelesInfo() {
-            setLoading(true);
-            let { data, error } = await supabase
-                .from('Speles_Info')
-                .select('*')
-                .eq('id', info.id)
-    
-                setSpelesInfo(data);
-                getKomandasInfo(data);
-
-            let { data: Tiesraide, err } = await supabase
-                .from('Tiesraide')
-                .select('stream_id')
-                .eq("speles_id", info.id)
-                setStreamId(Tiesraide[0].stream_id);
-        };
-
-        async function getKomandasInfo(spele) {
-            let { data, error } = await supabase
-                .from('Komanda')
-                .select('*')
-                .in('id', [spele[0].komanda1, spele[0].komanda2])
-            
-                setKomandasInfo(data);
-                setLoading(false);
-        };
-
-        getSpelesInfo();
+        checkAccess()
     }, [info.id])
+
+    const checkAccess = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+    
+        if (!user) {
+            router.replace("/(auth)/login");
+            return;
+        }
+        getSpelesInfo();
+    }
+
+    async function getSpelesInfo() {
+        setLoading(true);
+        let { data, error } = await supabase
+            .from('Speles_Info')
+            .select('*')
+            .eq('id', info.id)
+
+            setSpelesInfo(data);
+            getKomandasInfo(data);
+
+        let { data: Tiesraide, err } = await supabase
+            .from('Tiesraide')
+            .select('stream_id')
+            .eq("speles_id", info.id)
+            setStreamId(Tiesraide[0].stream_id);
+    };
+
+    async function getKomandasInfo(spele) {
+        let { data, error } = await supabase
+            .from('Komanda')
+            .select('*')
+            .in('id', [spele[0].komanda1, spele[0].komanda2])
+        
+            setKomandasInfo(data);
+            setLoading(false);
+    };
 
     const videoSource = `https://stream.mux.com/${streamId}.m3u8`
     const player = useVideoPlayer(videoSource);

@@ -1,14 +1,15 @@
 import { Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Alert } from "react-native";
 import { supabase } from "@/lib/supabase-client";
-import { useEffect, useState } from "react";
-import MainHeader from "@/components/mainHeader";
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/components/themeContext";
 import { getStyles } from "@/styles/styles";
 import * as ImagePicker from 'expo-image-picker';
+import { router } from "expo-router";
+import { handleImageUpload } from "@/components/handleGallery";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState({ name: "", email: "", avatar_url: "", username: "", created_at: "" });
+  const [userData, setUserData] = useState({ name: "", email: "", image: "", username: "" });
   const [isEditing, setIsEditing] = useState(false);
   const [imageUri, setImageUri] = useState(null);
 
@@ -16,59 +17,55 @@ export default function Profile() {
   const styles = getStyles(theme);
 
   useEffect(() => {
-    async function fetchUser() {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-        const isValidUrl = (url) => {
-          try {
-            new URL(url);
-            return true;
-          } catch (_) {
-            return false;
-          }
-        };
-        let avatar_url = user.user_metadata?.avatar_url
-
-        if (!isValidUrl(avatar_url)) {
-          const { data, error } = await supabase
-            .storage
-            .from("avatars")
-            .getPublicUrl(avatar_url);
-
-          if (!error) {
-            avatar_url = data.publicUrl;
-          }
-        }
-        setUserData({
-          name: user.user_metadata?.name || "",
-          email: user.email || "",
-          avatar_url: avatar_url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-          username: user.user_metadata?.username || "",
-          created_at: user.created_at,
-          id: user.id
-        });
-      } else {
-        Alert.alert("Error Accessing User");
-      }
-    }
-    fetchUser();
+    fetchUser()
   }, []);
+
+  const fetchUser = async () => {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (user) {
+      const { data, error } = await supabase
+          .from("Users")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+
+      setUser(data);
+      const isValidUrl = (url) => {
+        try {
+          new URL(url);
+          return true;
+        } catch (_) {
+          return false;
+        }
+      };
+      let avatar_url = data.image
+
+      if (!isValidUrl(avatar_url)) {
+        const { data, error } = await supabase
+          .storage
+          .from("avatars")
+          .getPublicUrl(avatar_url);
+
+        if (!error) {
+          avatar_url = data.publicUrl;
+        }
+      }
+      setUserData({
+        name: data.name || "",
+        email: data.email || "",
+        avatar_url: avatar_url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+        username: data.username || "",
+        id: data.user_id
+      });
+    } else {
+      Alert.alert("Error Accessing User");
+    }
+  }
   
   const handleUpdateProfile = async () => {
     let avatarUrl = userData.avatar_url;
-    if (imageUri) {
-      const { data, error } = await supabase.storage
-        .from('avatars')
-        .upload(`${Date.now()}`, { uri: imageUri }, { contentType: 'image/png' });
-
-      if (error) {
-        Alert.alert("Error uploading image", error.message);
-        return;
-      }
-
-      avatarUrl = data?.path;
-    }
+    if (imageUri) 
+      avatarUrl = await handleImageUpload('avatars', imageUri);
 
     const { error } = await supabase.auth.updateUser({
       data: {
@@ -78,13 +75,14 @@ export default function Profile() {
       },
     });
     
-    await supabase.from("Users").update({ username: userData.username, image: avatarUrl }).eq("user_id", userData.id)
+    await supabase.from("Users").update({ username: userData.username, image: avatarUrl, name: userData.name }).eq("user_id", userData.id)
 
     if (error) {
       Alert.alert("Error Updating Profile", error.message);
     } else {
-
       Alert.alert("Profile Updated Successfully");
+      global.refreshTabs?.()
+
       setIsEditing(false);
     }
   };
@@ -112,7 +110,6 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <MainHeader />
       {user && (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.profileContainer}>
@@ -139,7 +136,13 @@ export default function Profile() {
                 </TouchableOpacity>
               </>
             )}
-            <TouchableOpacity onPress={async () => await supabase.auth.signOut()} style={styles.buttonContainer}>
+            <TouchableOpacity 
+              onPress={async () => {
+                await supabase.auth.signOut()
+                router.navigate("/(auth)/login")
+              }} 
+              style={styles.buttonContainer}
+            >
               <Text style={styles.buttonText}>LOGOUT</Text>
             </TouchableOpacity>
           </View>

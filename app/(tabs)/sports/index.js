@@ -1,49 +1,59 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Platform } from "react-native";
-import MainHeader from "@/components/mainHeader";
-import { router } from "expo-router";
-import { supabase } from "@/lib/supabase-client";
-import { useTheme } from "@/components/themeContext";
-import { getStyles } from "@/styles/styles";
-import { SearchBar } from '@rneui/themed';
+import React, { useEffect, useState } from "react"
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Platform } from "react-native"
+import { router } from "expo-router"
+import { supabase } from "@/lib/supabase-client"
+import { useTheme } from "@/components/themeContext"
+import { getStyles } from "@/styles/styles"
 
 
 export default function Sports() {
     const [loading, setLoading] = useState(true)
-    const [sportsNews, setSportsNews] = useState([]);
-    const [liveStreams, setLiveStreams] = useState([]);
-    const [search, setSearch] = useState("");
-    const { theme, toggleTheme } = useTheme();
+    const [sportsNews, setSportsNews] = useState([])
+    const [liveStreams, setLiveStreams] = useState([])
+    const [authors, setAuthors] = useState([])
+    const { theme, toggleTheme } = useTheme()
             
-    const styles = getStyles(theme);
+    const styles = getStyles(theme)
 
     useEffect(() => {
-        async function getSportaZinas() {
-            let { data: Sporta_zinas, error } = await supabase
-                .from('Sporta_zinas')
-                .select('*')
-                .range(0,2)
-    
-            setSportsNews(Sporta_zinas);
-            getTiesraides();
-        };
-
-        async function getTiesraides() {
-            let { data, error } = await supabase
-                .from('Tiesraide')
-                .select('*')
-                .range(0,5)
-    
-                setLiveStreams(data);
-            setLoading(false)
-        };
-
         getSportaZinas();
     }, [])
 
-    const updateSearch = (search) => {
-        setSearch(search);
+    const getAuthors = async () => {
+        let { data, error } = await supabase
+            .from('Users')
+            .select('id,name')
+            .eq('role', 'Author')
+        
+        if (error) console.log(error.message)
+
+        setAuthors(data)
+    }
+
+    const getSportaZinas = async () => {
+        let { data: Sporta_zinas, error } = await supabase
+            .from('Sporta_zinas')
+            .select('*')
+            .range(0,2)
+
+        if (error) console.log(error.message)
+
+        setSportsNews(Sporta_zinas)
+        getAuthors()
+        getTiesraides()
     };
+
+    const getTiesraides = async () => {
+        let { data, error } = await supabase
+            .from('Tiesraide')
+            .select('*')
+            .range(0,5)
+
+        if (error) console.log(error.message)
+
+        setLiveStreams(data)
+        setLoading(false)
+    }
 
     const renderLiveStreams = () => (
         <>
@@ -60,15 +70,17 @@ export default function Sports() {
     );
 
     const renderNewsItem = ({ item }) => {
+        const author = authors.find(x => x.id === item.author_id)
+
         return (
-            <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: { id: item.id }})}>
+            <TouchableOpacity onPress={() => router.navigate({pathname: "/(tabs)/news/", params: { id: item.id }})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
                         <View style={styles.authorAvatar}>
-                            <Text style={styles.avatarText}>{item.author.charAt(0)}</Text> 
+                            <Text style={styles.avatarText}>{author ? author.name.charAt(0) : ""}</Text> 
                         </View>
                         <View>
-                            <Text style={styles.newsAuthor}>{item.author}</Text>
+                            <Text style={styles.newsAuthor}>{author ? author.name : ""}</Text>
                         </View>
                     </View>
                     <Image source={{ uri: item.image }} style={styles.newsImage} />
@@ -80,15 +92,6 @@ export default function Sports() {
 
     const renderListHeader = () => (
         <View style={styles.listHeader}>
-            <SearchBar
-                placeholder="Type Here..."
-                onChangeText={updateSearch}
-                value={search}
-                round
-                platform={Platform.OS === "web" ? "default" : Platform.OS === "android" ? "android" : "iOS"}
-                lightTheme={theme === "light"}
-                containerStyle={{ backgroundColor: "transparent", border: "transparent"}}
-            />
             {renderLiveStreams()}
             <Text style={styles.headerText}>Sporta ziņas</Text>
         </View>
@@ -96,9 +99,6 @@ export default function Sports() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.headerContainer}>
-                <MainHeader />
-            </View>
             {!loading &&
                 <FlatList
                     data={sportsNews}

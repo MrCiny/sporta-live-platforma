@@ -1,95 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Modal, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Image } from 'react-native';
-import { supabase } from '@/lib/supabase-client';
-import { useTheme } from '@/components/themeContext';
-import { getDashboardStyles, getStyles } from '@/styles/styles';
-import MainHeader from '@/components/mainHeader';
-import GameModal from './components/GameModal';
-import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react'
+import { View, Text, FlatList, Modal, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Image } from 'react-native'
+import { supabase } from '@/lib/supabase-client'
+import { useTheme } from '@/components/themeContext'
+import { getDashboardStyles, getStyles } from '@/styles/styles'
+import GameModal from './components/GameModal'
+import { router } from 'expo-router'
 
 export default function GameDashboard() {
-  const [games, setGames] = useState([]);
-  const [teams, setTeams] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [form, setForm] = useState({
-    komanda1: 0,
-    komanda2: 0,
-    date: '',
-    laiks: '',
-    rezultats: '',
-    title: '',
-    image: '',
-    stream_id: '',
-    stream_key: '',
-    sport: ''
-  });
+  const [games, setGames] = useState([])
+  const [teams, setTeams] = useState([])
+  const [modalVisible, setModalVisible] = useState(false)
+  const [selectedGame, setSelectedGame] = useState(null)
 
-  const { theme } = useTheme();
-  const styles = getStyles(theme);
-  const dashboardStyles = getDashboardStyles(theme);
+  const { theme } = useTheme()
+  const styles = getStyles(theme)
+  const dashboardStyles = getDashboardStyles(theme)
 
   useEffect(() => {
-    checkAccess();
-    refreshData();
-  }, []);
+    checkAccess()
+  }, [])
 
   const checkAccess = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser()
 
-      if (!user) {
-        router.replace("/(auth)/login");
-        return;
-      }
+    if (!user) {
+      router.navigate("/(auth)/login")
+      return
+    }
 
-      const { data, error } = await supabase
-        .from("Users")
-        .select("role")
-        .eq("user_id", user.id)
-        .single();
+    const { data, error } = await supabase
+      .from("Users")
+      .select("role")
+      .eq("user_id", user.id)
+      .single()
 
-      if (data?.role !== "Admin") {
-        router.replace("/(tabs)/sports/");
-      }
+    if (data?.role !== "Admin") {
+      router.navigate("/(tabs)/sports/")
+      return
+    }
+    refreshData();
   }
 
   const refreshData = async () => {
-    fetchGames();
-    fetchTeams();
+    fetchGames()
+    fetchTeams()
   }
 
   const fetchGames = async () => {
     const { data } = await supabase
       .from('Speles_Info')
-      .select('*, Tiesraide(*)');
+      .select('*, Tiesraide(*)')
     setGames(data || []);
   };
 
   const fetchTeams = async () => {
-    const { data } = await supabase.from('Komanda').select('*');
-    setTeams(data || []);
+    const { data } = await supabase.from('Komanda').select('*')
+    setTeams(data || [])
   };
 
   const openModal = (game = null) => {
     if (game) {
-      setSelectedGame(game);
-      setForm({
-        komanda1: game.komanda1,
-        komanda2: game.komanda2,
-        date: game.date,
-        laiks: game.laiks,
-        rezultats: game.rezultats,
-        title: game.Tiesraide[0]?.title || '',
-        image: game.Tiesraide[0]?.image || '',
-        stream_id: game.Tiesraide[0]?.stream_id || '',
-        stream_key: game.Tiesraide[0]?.stream_key || '',
-        sport: game.Tiesraide[0]?.sport || ''
-      });
+      setSelectedGame(game)
     } else {
-      setSelectedGame(null);
-      setForm({ komanda1: 0, komanda2: 0, date: '', laiks: '', rezultats: '', title: '', image: '', stream_id: '', stream_key: '', sport: '' });
+      setSelectedGame(null)
     }
-    setModalVisible(true);
+    setModalVisible(true)
   };
 
   const renderGameItem = ({ item }) => (
@@ -110,7 +85,6 @@ export default function GameDashboard() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <MainHeader />
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={dashboardStyles.headerRow}>
           <Text style={styles.headerText}>Game Dashboard</Text>

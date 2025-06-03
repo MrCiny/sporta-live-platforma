@@ -2,35 +2,32 @@ import { Header } from "react-native-elements";
 import { Button, Icon, Avatar, Text } from '@rneui/themed';
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getStyles } from "@/styles/styles";
 import { useTheme } from "./themeContext";
-import { Platform, View } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
-
+import { View } from "react-native";
 export default function MainHeader() {
     const { theme, toggleTheme } = useTheme();
     const styles = getStyles(theme);
     const [pic, setPic] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
     const [role, setRole] = useState("User")  
     useEffect(() => {        
-        checkAccess()
-      }, []);
+      checkAccess()
+    }, []);
 
     const checkAccess = async () => {
       const { data: { user } } = await supabase.auth.getUser();
   
       if (!user) {
-        router.replace("/(auth)/login");
+        router.navigate("/(auth)/login");
         return;
       }
       supabase.auth.getUser().then(async ({ data: { user } }) => {
         const { data, error } = await supabase
-                .from("Users")
-                .select("role,image")
-                .eq("user_id", user.id)
-                .single();
+          .from("Users")
+          .select("role,image")
+          .eq("user_id", user.id)
+          .single();
 
         if (!error) {
           setPic(data.image)
@@ -64,11 +61,11 @@ export default function MainHeader() {
     }
 
     const redirectSportDash = () => {
-        router.replace("/(tabs)/sportsDashboard");
+        router.navigate("/(tabs)/sportsDashboard");
     }
 
     const redirectNewsDash = () => {
-      router.replace("/(tabs)/newsDashboard");
+      router.navigate("/(tabs)/newsDashboard");
     }
 
     return (
@@ -85,24 +82,24 @@ export default function MainHeader() {
             rightComponent={
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 {role === "Admin" && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Button 
                     onPress={redirectSportDash} 
                     type="clear" 
                     icon={<Icon type="master" name="scoreboard" color="#fff" />}
-                  />  
+                  />
+                )}
+                {(role === "Admin" || role === "Author") && (
                   <Button 
                     onPress={redirectNewsDash} 
                     type="clear" 
                     icon={<Icon type="master" name="article" color="#fff" />}
                   /> 
-                  </View>
-                )}
+                )}   
                 <Avatar
                     size={40}
                     rounded
                     source={{ uri: pic }}
-                    onPress={() => router.replace("/(tabs)/profile")}
+                    onPress={() => router.navigate("/(tabs)/profile")}
                     containerStyle={styles.avatar}
                 />
               </View>

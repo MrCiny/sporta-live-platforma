@@ -1,43 +1,59 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Image, TouchableOpacity, ScrollView, SafeAreaView} from "react-native";
-import MainHeader from "@/components/mainHeader";
-import { supabase } from "@/lib/supabase-client";
-import { router } from "expo-router";
-import { useTheme } from "@/components/themeContext";
-import { getStyles } from "@/styles/styles";
+import React, { useEffect, useState } from "react"
+import { View, Text, FlatList, Image, TouchableOpacity, ScrollView, SafeAreaView} from "react-native"
+import { supabase } from "@/lib/supabase-client"
+import { router } from "expo-router"
+import { useTheme } from "@/components/themeContext"
+import { getStyles } from "@/styles/styles"
 
 export default function Basketball() {
     const [loading, setLoading] = useState(true)
-    const [sportsNews, setSportsNews] = useState([]);
-    const [liveStreams, setLiveStreams] = useState([]);
-    const { theme, toggleTheme } = useTheme();
+    const [sportsNews, setSportsNews] = useState([])
+    const [liveStreams, setLiveStreams] = useState([])
+    const [authors, setAuthors] = useState([])
+    const { theme, toggleTheme } = useTheme()
     
-    const styles = getStyles(theme);
+    const styles = getStyles(theme)
 
     useEffect(() => {
-        async function getSportaZinas() {
-            let { data: Sporta_zinas, error } = await supabase
-                .from('Sporta_zinas')
-                .select('*')
-                .eq('sport', 'basketball')
-    
-            setSportsNews(Sporta_zinas);
-            getTiesraides();
-        };
-
-        async function getTiesraides() {
-            let { data, error } = await supabase
-                .from('Tiesraide')
-                .select('*')
-                .eq('sport', 'basketball')
-                .range(0,5)
-    
-            setLiveStreams(data);
-            setLoading(false);
-        };
-
         getSportaZinas();
     }, [])
+
+    const getAuthors = async () => {
+        let { data, error } = await supabase
+            .from('Users')
+            .select('id,name')
+            .eq('role', 'Author')
+
+        if (error) console.log(error.message)
+
+        setAuthors(data)
+    }
+
+    const getSportaZinas = async () => {
+        let { data, error } = await supabase
+            .from('Sporta_zinas')
+            .select('*')
+            .eq('sport', 'basketball')
+
+        if (error) console.log(error.message)
+
+        setSportsNews(data)
+        getAuthors()
+        getTiesraides()
+    };
+
+    const getTiesraides = async () => {
+        let { data, error } = await supabase
+            .from('Tiesraide')
+            .select('*')
+            .eq('sport', 'basketball')
+            .range(0,5)
+
+        if (error) console.log(error.message)
+        
+        setLiveStreams(data)
+        setLoading(false)
+    };
 
     const renderLiveStreams = () => (
         <>
@@ -54,15 +70,17 @@ export default function Basketball() {
     );
 
     const renderNewsItem = ({ item }) => {
+        const author = authors.find(x => x.id === item.author_id)
+
         return (
-            <TouchableOpacity onPress={() => router.replace({pathname: "/(tabs)/news/", params: { id: item.id }})}>
+            <TouchableOpacity onPress={() => router.navigate({pathname: "/(tabs)/news/", params: { id: item.id }})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
                         <View style={styles.authorAvatar}>
-                            <Text style={styles.avatarText}>{item.author.charAt(0)}</Text> 
+                            <Text style={styles.avatarText}>{author ? author.name.charAt(0) : ""}</Text> 
                         </View>
                         <View>
-                            <Text style={styles.newsAuthor}>{item.author}</Text>
+                            <Text style={styles.newsAuthor}>{author ? author.name : ""}</Text>
                         </View>
                     </View>
                     <Image source={{ uri: item.image }} style={styles.newsImage} />
@@ -81,9 +99,6 @@ export default function Basketball() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.headerContainer}>
-                <MainHeader />
-            </View>
             <FlatList
                 data={sportsNews}
                 keyExtractor={(item) => item.id}

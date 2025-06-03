@@ -3,6 +3,7 @@ import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-n
 import { supabase } from '@/lib/supabase-client'
 import { Button, Input, Icon } from '@rneui/themed'
 import { Text } from 'react-native-elements';
+import { router } from 'expo-router';
 
 export default function Auth() {
   const [email, setEmail] = useState('')
@@ -25,7 +26,7 @@ export default function Auth() {
       setLoading(false)
   }
 
-  async function signUpWithEmail() {
+  const signUpWithEmail = async () => {
     setLoading(true)
     const {
       data,
@@ -40,16 +41,18 @@ export default function Auth() {
       }
     })
 
-    if(data.user){
-        await supabase.from("Users").insert({username: email, email: email, user_id: data.user.id })
-      }
+    if(data.user)
+      await supabase.from("Users").insert({username: email, email: email, user_id: data.user.id })
 
     if (error) showSnackbar(error.message, true)
     if (!data.session) Alert.alert('Please check your inbox for email verification!')
       setLoading(false)
+
+    if(data.session)
+      router
   }
 
-  async function signInWithGitHub() {
+  const signInWithGitHub = async () => {
     setLoading(true)
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'github',

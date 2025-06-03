@@ -25,36 +25,37 @@ export async function handleGallery(title) {
 }
 
 export async function handleImageUpload(title, imageUri) {
-    if (imageUri) {
-        const response = await fetch(imageUri);
-        const blob = await response.blob();
-        
-        const { data, error } = await supabase.storage
-        .from(title)
-        .upload(`${Date.now()}`, { uri: blob }, { contentType: 'image/png' });
+    if (!imageUri) return
 
-        if (error) {
-            alert("Error uploading image", error.message);
-            return imageUri;
-        }
-        
-        return data?.path;
+    const response = await fetch(imageUri)
+    const blob = await response.blob()
+
+    const fileName = `${Date.now()}.png`;
+    
+    const { data, error } = await supabase.storage
+    .from(title)
+    .upload(fileName, blob, { contentType: 'image/png' });
+
+    if (error) {
+        alert("Error uploading image", error.message);
+        return imageUri;
     }
+    
+    return data?.path;
 }
 
 
 export async function getImage(title, imageUri) {
     const { data, error } = await supabase
-            .storage
-            .from(title)
-            .getPublicUrl(imageUri);
+        .storage
+        .from(title)
+        .getPublicUrl(imageUri);
 
-          if (!error) {
-            console.log(data)
-            return data.publicUrl;
-          }
-          else {
-            alert("Error while uploading picture", error)
-            return imageUri;
-          }
+    if (!error) {
+        return data.publicUrl;
+    }
+    else {
+        alert("Error while uploading picture", error)
+        return imageUri;
+    }
 }

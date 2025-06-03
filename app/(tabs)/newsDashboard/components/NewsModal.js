@@ -3,100 +3,53 @@ import { View, Text, TextInput, Button, StyleSheet, Modal, TouchableWithoutFeedb
 import { supabase } from "@/lib/supabase-client";
 import { getModalStyles } from "@/styles/styles";
 import { useTheme } from "@/components/themeContext";
-import { getImage, handleGallery, handleImageUpload } from "./handleGallery";
 import { Picker } from "@react-native-picker/picker";
+import { getImage, handleGallery, handleImageUpload } from "@/components/handleGallery";
 
-type Game = {
-  id: number;
-  komanda1: number;
-  komanda2: number;
-  datums: string;
-  vieta: string;
-};
+export default function NewsModal(props) {
+  const {
+    visible, 
+    news, 
+    onClose, 
+    onFinish
+  } = props
 
-type Tiesraide = {
-  id: number;
-  image: string;
-  speles_id: number;
-  sport: string;
-  stream_id: string;
-  stream_key: string;
-  title: string;
-}
-
-type Props = {
-  visible: boolean;
-  game: Game | null;
-  stream: Tiesraide | null;
-  onClose: () => void;
-  onFinish: () => void;
-};
-
-export default function GameModal({ visible, game, stream, onClose, onFinish }: Props) {
-  const [komanda1, setKomanda1] = useState(1);
-  const [komanda2, setKomanda2] = useState(1);
-  const [datums, setDatums] = useState("");
-  const [vieta, setVieta] = useState("");
   const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
   const [sport, setSport] = useState("");
-  const [komandas, setKomandas] = useState<{ id: number; nosaukums: string }[]>([])
+  const [author, setAuthor] = useState("");
+  const [description, setDescription] = useState("");
   const { theme } = useTheme();
   const modalStyles = getModalStyles(theme);
 
   useEffect(() => {
-    if (game && stream) {
-      setKomanda1(game.komanda1);
-      setKomanda2(game.komanda2);
-      setDatums(game.datums);
-      setVieta(game.vieta);
-      setImage(stream.image);
-      setTitle(stream.title);
-      setSport(stream.sport);
-      getKomandas()
+    if (news) {
+      setImage(news.image)
+      setTitle(news.title)
+      setSport(news.sport)
+      setAuthor(news.author)
+      setDescription(news.description)
     } else {
-      setKomanda1(1);
-      setKomanda2(1);
-      setDatums("");
-      setVieta("");
-      setImage("");
-      setTitle("");
-      setSport("football");
+      setImage("")
+      setTitle("")
+      setSport("")
+      setAuthor("")
+      setDescription("")
     }
-  }, [game]);
+  }, [news]);
 
   const handleSave = async () => {
-    console.log(image)
     let imageUri = await handleImageUpload("thumbnail", image);
     let finalImage = await getImage("thumbnail", imageUri)
-    const gamePayload = { komanda1, komanda2, vieta };
-    const streamPayload = { title, image: finalImage, speles_id: game?.id, sport };
+    const zinasPayload = { title, description, image: finalImage, author, published:  new Date().toLocaleDateString()};
 
     try {
-      if (game && stream) {
-        await supabase.from("Speles_Info").update(gamePayload).eq("id", game.id);
-        await supabase.from("Tiesraide").update(streamPayload).eq("id", stream.id).select();
+      if (news) {
+        await supabase.from("Sporta_zinas").update(zinasPayload).eq("id", news.id);
       } else {
-        const { data: speleInfo, error} = await supabase.from("Speles_Info").insert(gamePayload).select();
-        const response = await fetch('http://192.168.0.22:3000/create-livestream', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-  
-        const muxStream = await response.json();
-      
-        const insertPayload = {
-          ...streamPayload,
-          speles_id: speleInfo ? speleInfo[0].id : 0,
-          stream_key: muxStream.stream_key,
-          stream_id: muxStream.playback_ids[0].id
-        }
-
-        await supabase.from("Tiesraide").insert(insertPayload).select();
-        
+        const { data: speleInfo, error} = await supabase.from("Sporta_zinas").insert(zinasPayload).select();
       }
+      global.refreshSectionTabs?.()
       onFinish();
       onClose();
     } catch (error) {

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform } from "react-native";
-import MainHeader from "@/components/mainHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
@@ -28,7 +27,7 @@ export default function streams() {
         const { data: { user } } = await supabase.auth.getUser();
     
         if (!user) {
-            router.replace("/(auth)/login");
+            router.navigate("/(auth)/login");
             return;
         }
         getSpelesInfo();
@@ -82,8 +81,6 @@ export default function streams() {
     }
 
     return (
-        <>
-        <MainHeader />
         <SafeAreaView style={styles.safeArea}>
             {!loading &&
                 <ScrollView style={styles.streamContainer}>
@@ -131,7 +128,6 @@ export default function streams() {
                 </ScrollView>
             }
         </SafeAreaView>
-        </>
     );
 }
 

@@ -65,7 +65,7 @@ export default function streams() {
 
     const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
-    VideoPlayer = () => {
+    const VideoPlayer = () => {
         if (Platform.OS === "web"){
             var MuxPlayer = require("@mux/mux-player-react");
             
@@ -95,11 +95,14 @@ export default function streams() {
                         <Text style={styles.score}>{spelesInfo[0].rezultats}</Text>
                         <Text style={styles.teamName}>{komandasInfo[spelesInfo[0].komanda1 === spelesInfo[0].komanda2 ? 0 : 1].nosaukums}</Text>
                     </View>
-
                     <View style={styles.banner}>
-                        <Image resizeMode={"contain"} source={{ uri: komandasInfo[0].logo }} style={styles.teamLogo} />
+                        <TouchableOpacity onPress={() => router.navigate({pathname: "/(tabs)/teams/", params: { id: komandasInfo[0].id }})}>
+                            <Image resizeMode={"contain"} source={{ uri: komandasInfo[0].logo }} style={styles.teamLogo} />
+                        </TouchableOpacity>
                         <Text style={styles.vsText}>VS</Text>
-                        <Image resizeMode={"contain"} source={{ uri: komandasInfo[spelesInfo[0].komanda1 === spelesInfo[0].komanda2 ? 0 : 1].logo }} style={styles.teamLogo} />
+                        <TouchableOpacity onPress={() => router.navigate({pathname: "/(tabs)/teams/", params: { id: komandasInfo[1].id }})}>
+                            <Image resizeMode={"contain"} source={{ uri: komandasInfo[spelesInfo[0].komanda1 === spelesInfo[0].komanda2 ? 0 : 1].logo }} style={styles.teamLogo} />
+                        </TouchableOpacity>
                     </View>
 
                     <View style={styles.streamButtonContainer}>

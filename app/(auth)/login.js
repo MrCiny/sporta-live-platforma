@@ -42,7 +42,7 @@ export default function Auth() {
     })
 
     if(data.user)
-      await supabase.from("Users").insert({username: email, email: email, user_id: data.user.id })
+      await supabase.from("Users").insert({ username: email, email: email, name: email.split("@")[0], user_id: data.user.id, created_at: new Date().toLocaleDateString() })
 
     if (error) showSnackbar(error.message, true)
     if (!data.session) Alert.alert('Please check your inbox for email verification!')

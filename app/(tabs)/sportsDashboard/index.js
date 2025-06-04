@@ -58,9 +58,10 @@ export default function GameDashboard() {
     setTeams(data || [])
   };
 
-  const openModal = (game = null) => {
-    if (game) {
-      setSelectedGame(game)
+  const openModal = (tempGame = null) => {
+    console.log(tempGame)
+    if (tempGame) {
+      setSelectedGame(tempGame)
     } else {
       setSelectedGame(null)
     }
@@ -85,18 +86,20 @@ export default function GameDashboard() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={dashboardStyles.headerRow}>
           <Text style={styles.headerText}>Game Dashboard</Text>
-          <TouchableOpacity onPress={() => { setSelectedGame(null); setModalVisible(true); }} style={dashboardStyles.addButton}>
+          <TouchableOpacity onPress={() => openModal(null) } style={dashboardStyles.addButton}>
               <Text style={dashboardStyles.addButtonText}>+ Create</Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          data={games}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderGameItem}
-        />
+        <ScrollView horizontal>
+          <FlatList
+            data={games}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderGameItem}
+            showsVerticalScrollIndicator={false}
+          />
+        </ScrollView>
         <GameModal
           visible={modalVisible}
           game={selectedGame}
@@ -104,8 +107,6 @@ export default function GameDashboard() {
           onClose={() => setModalVisible(false)}
           onFinish={() => refreshData()}
         />
-      </ScrollView>
-
     </SafeAreaView>
   );
 }  

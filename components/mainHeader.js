@@ -1,5 +1,5 @@
 import { Header } from "react-native-elements";
-import { Button, Icon, Avatar, Text } from '@rneui/themed';
+import { Button, Icon, Avatar, ListItem } from '@rneui/themed';
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase-client";
 import React, { useEffect, useRef, useState } from "react";
@@ -10,7 +10,8 @@ export default function MainHeader() {
     const { theme, toggleTheme } = useTheme();
     const styles = getStyles(theme);
     const [pic, setPic] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
-    const [role, setRole] = useState("User")  
+    const [role, setRole] = useState("User") 
+     
     useEffect(() => {        
       checkAccess()
     }, []);
@@ -61,15 +62,24 @@ export default function MainHeader() {
     }
 
     const redirectSportDash = () => {
-        router.navigate("/(tabs)/sportsDashboard");
+      router.navigate("/(tabs)/sportsDashboard");
+    }
+
+    const redirectTeamDash = () => {
+      router.navigate("/(tabs)/teamDashboard");
     }
 
     const redirectNewsDash = () => {
       router.navigate("/(tabs)/newsDashboard");
     }
 
+    const redirectUserGuide = () => {
+      router.navigate("/(tabs)/userGuide");
+    }
+
     return (
         <Header
+        placement="left"
             containerStyle={styles.headerContainer}
             leftComponent={
                 <Button 
@@ -80,13 +90,20 @@ export default function MainHeader() {
             }
             centerComponent={{ text: 'SportsLife LV', style: { color: '#fff', fontSize: 24, fontWeight: "bold", textAlign: "center" } }}
             rightComponent={
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 {role === "Admin" && (
-                  <Button 
-                    onPress={redirectSportDash} 
-                    type="clear" 
-                    icon={<Icon type="master" name="scoreboard" color="#fff" />}
-                  />
+                  <>
+                    <Button 
+                      onPress={redirectSportDash} 
+                      type="clear" 
+                      icon={<Icon type="master" name="scoreboard" color="#fff" />}
+                    />
+                    <Button 
+                      onPress={redirectTeamDash} 
+                      type="clear" 
+                      icon={<Icon type="master" name="recent-actors" color="#fff" />}
+                    />
+                  </>
                 )}
                 {(role === "Admin" || role === "Author") && (
                   <Button 
@@ -94,7 +111,12 @@ export default function MainHeader() {
                     type="clear" 
                     icon={<Icon type="master" name="article" color="#fff" />}
                   /> 
-                )}   
+                )}
+                <Button 
+                  onPress={redirectUserGuide} 
+                  type="clear" 
+                  icon={<Icon type="master" name="menu-book" color="#fff" />}
+                />   
                 <Avatar
                     size={40}
                     rounded

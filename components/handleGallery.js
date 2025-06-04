@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase-client';
 import * as ImagePicker from 'expo-image-picker';
+import { Platform } from 'react-native';
 
 export async function handleGallery(title) {
     const options = {
@@ -31,17 +32,32 @@ export async function handleImageUpload(title, imageUri) {
     const blob = await response.blob()
 
     const fileName = `${Date.now()}.png`;
-    
-    const { data, error } = await supabase.storage
-    .from(title)
-    .upload(fileName, blob, { contentType: 'image/png' });
 
-    if (error) {
-        alert("Error uploading image", error.message);
-        return imageUri;
+    if (Platform.OS === "web") {
+        const { data, error } = await supabase.storage
+            .from(title)
+            .upload(fileName, blob, { contentType: 'image/png' });
+
+        if (error) {
+            console.log("Error uploading image", error.message);
+            return imageUri;
+        }
+        
+        return data?.path;
     }
-    
-    return data?.path;
+    else {
+        const { data, error } = await supabase.storage
+            .from(title)
+            .upload(fileName, { uri: imageUri}, { contentType: 'image/png' });
+
+        if (error) {
+            console.log("Error uploading image", error.message);
+            return imageUri;
+        }
+        
+        console.log(data)
+        return data?.path;
+    }
 }
 
 

@@ -2,6 +2,9 @@ import { Dimensions, StyleSheet } from "react-native";
 import { lightTheme, darkTheme } from "./theme";
 import { color } from "react-native-elements/dist/helpers";
 
+const { width } = Dimensions.get("window");
+const isSmallDevice = width < 600;
+
 export const getStyles = (theme) => {
     const colors = theme === "dark" ? darkTheme : lightTheme;
     
@@ -65,8 +68,8 @@ export const getStyles = (theme) => {
             color: colors.text 
         },
         newsCard: { 
-            marginBottom: 20, 
             borderRadius: 10, 
+            marginRight: 20,
             backgroundColor: colors.newsCard, 
             overflow: "hidden", 
             padding: 10, 
@@ -119,6 +122,10 @@ export const getStyles = (theme) => {
             backgroundColor: colors.background,
             borderColor: colors.background
         },
+        activeTab: {
+            backgroundColor: colors.background,
+            borderColor: colors.background
+        },
         container: {
             marginTop: 40,
             padding: 12,
@@ -132,12 +139,27 @@ export const getStyles = (theme) => {
             marginTop: 20,
         },
         buttonContainer: {
-            backgroundColor: "#000968",
-            borderRadius: 10,
-            paddingVertical: 10,
-            paddingHorizontal: 12,
-            margin: 8,
+            backgroundColor: theme === "dark" ? '#1E40AF' : '#3B82F6',
+            borderRadius: 12,               
+            paddingVertical: 14,
+            paddingHorizontal: 20,
+            marginHorizontal: 16,
+            marginVertical: 10,
+
+            // Shadow for iOS
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 6,
+
+            // Elevation for Android
+            elevation: 4,
+
+            // Optional: Center contents
+            alignItems: "center",
+            justifyContent: "center",
         },
+
         buttonText: {
             fontSize: 18,
             color: "#fff",
@@ -287,7 +309,7 @@ export const getDashboardStyles = (theme) => {
         headerRow: { flexDirection: "row", justifyContent: "space-between", padding: 16 },
         addButton: { backgroundColor: "#007bff", padding: 8, borderRadius: 6 },
         addButtonText: { color: "#fff" },
-        card: { backgroundColor: colors.dashboardCard, padding: 12, marginBottom: 12, borderRadius: 10, flexDirection: "row", alignItems: "center" },
+        card: { backgroundColor: colors.dashboardCard, padding: 12, marginBottom: 12, marginLeft: 12, marginRight: 12, borderRadius: 10, flexDirection: "row", alignItems: "center" },
         thumbnail: { width: 160, height: 90, borderRadius: 8, marginRight: 12 },
         info: { flex: 1 },
         title: { fontSize: 16, fontWeight: "600", color: colors.text },
@@ -297,8 +319,102 @@ export const getDashboardStyles = (theme) => {
     });
 }
 
-const { width } = Dimensions.get("window");
-const isSmallDevice = width < 600;
+export const getTeamDashboardStyles = (theme) => {
+    const colors = theme === "dark" ? darkTheme : lightTheme;
+    
+    return StyleSheet.create({
+        headerRow: { flexDirection: "row", justifyContent: "space-between", padding: 16 },
+        addButton: { backgroundColor: "#007bff", padding: 8, borderRadius: 6 },
+        addButtonText: { color: "#fff" },
+        card: { backgroundColor: colors.dashboardCard, padding: 12, marginBottom: 12, marginLeft: 12, marginRight: 12, borderRadius: 10, flexDirection: "row", alignItems: "center" },
+        thumbnail: { width: 128, height: 128, borderRadius: 8, marginRight: 12 },
+        info: { flex: 1 },
+        title: { fontSize: 16, fontWeight: "600", color: colors.text },
+        subtitle: { fontSize: 12, color: colors.subtitle },
+        status: { marginTop: 4, fontSize: 13 },
+        actions: { gap: 12 },
+    });
+}
+
+export const getTeamStyles = (theme) => {
+    const colors = theme === "dark" ? darkTheme : lightTheme;
+    return StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: colors.liveCard,
+            padding: 20,
+        },
+        card: {
+            backgroundColor:colors.eventCard,
+            borderRadius: 16,
+            padding: 20,
+            alignItems: "center",
+        },
+        logo: {
+            width: 120,
+            height: 120,
+            borderRadius: 60,
+            marginBottom: 20,
+        },
+        logoPlaceholder: {
+            width: 120,
+            height: 120,
+            borderRadius: 60,
+            backgroundColor: "#dcdcdc",
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: 20,
+        },
+        logoText: {
+            fontSize: 40,
+            fontWeight: "bold",
+            color: "#555",
+        },
+        title: {
+            fontSize: 24,
+            fontWeight: "bold",
+            color: colors.text,
+            marginBottom: 10,
+        },
+        subTitle: {
+            fontSize: 18,
+            color: colors.subtitle,
+        },
+        centered: {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        errorText: {
+            fontSize: 18,
+            color: "red",
+        },
+        liveContainer: { 
+            flexDirection: "row", 
+            marginBottom: 20 
+        },
+        liveCard: { 
+            width: 320, 
+            borderRadius: 10, 
+            overflow: "hidden", 
+            marginRight: 10, 
+            backgroundColor: colors.liveCard, 
+            padding: 10 
+        },
+        liveImage: { 
+            width: "100%", 
+            height: 170, 
+            borderRadius: 10 
+        },
+        liveTitle: { 
+            fontSize: 16, 
+            fontWeight: "bold", 
+            textAlign: "center", 
+            padding: 5, 
+            color: colors.text 
+        },
+    })
+}
 
 export const getModalStyles = (theme) => {
     const colors = theme === "dark" ? darkTheme : lightTheme;

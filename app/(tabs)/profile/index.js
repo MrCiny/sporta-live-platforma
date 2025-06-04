@@ -1,6 +1,6 @@
 import { Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Alert } from "react-native";
 import { supabase } from "@/lib/supabase-client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@/components/themeContext";
 import { getStyles } from "@/styles/styles";
 import * as ImagePicker from 'expo-image-picker';
@@ -116,13 +116,15 @@ export default function Profile() {
             <Image source={{ uri: imageUri || userData.avatar_url }} style={styles.profileImage} />
             {isEditing ? (
               <>
-                <TextInput style={styles.input} value={userData.name} onChangeText={(text) => setUserData({ ...userData, name: text })} placeholder="Name" />
-                <TextInput style={styles.input} value={userData.username} onChangeText={(text) => setUserData({ ...userData, username: text })} placeholder="Username" />
+                <Text style={styles.usernameText}>Name:</Text>
+                <TextInput placeholderTextColor="#999" style={styles.input} value={userData.name} onChangeText={(text) => setUserData({ ...userData, name: text })} placeholder="Name" />
+                <Text style={styles.usernameText}>Username:</Text>
+                <TextInput placeholderTextColor="#999" style={styles.input} value={userData.username} onChangeText={(text) => setUserData({ ...userData, username: text })} placeholder="Username" />
                 <TouchableOpacity onPress={handleChooseImage} style={styles.buttonContainer}>
-                  <Text style={styles.buttonText}>CHANGE PROFILE PHOTO</Text>
+                  <Text style={styles.buttonText}>Change Profile Photo</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleUpdateProfile} style={styles.buttonContainer}>
-                  <Text style={styles.buttonText}>SAVE</Text>
+                  <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
               </>
             ) : (
@@ -132,7 +134,7 @@ export default function Profile() {
                 <Text style={styles.emailText}>{userData.email || "No Email Found"}</Text>
                 <Text style={styles.joinDateText}>Joined: {new Date(userData.created_at).toDateString()}</Text>
                 <TouchableOpacity onPress={() => setIsEditing(true)} style={styles.buttonContainer}>
-                  <Text style={styles.buttonText}>EDIT</Text>
+                  <Text style={styles.buttonText}>Edit</Text>
                 </TouchableOpacity>
               </>
             )}

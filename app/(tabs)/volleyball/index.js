@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Dimensions } from "react-native";
 import { supabase } from "@/lib/supabase-client";
 import { router } from "expo-router";
 import { useTheme } from "@/components/themeContext";
@@ -17,6 +17,9 @@ export default function Volleyball() {
     useEffect(() => {
         getSportaZinas();
     }, [])
+
+    const screenWidth = Dimensions.get("window").width;
+    const isSmallDevice = screenWidth < 600;
 
     const getAuthors = async () => {
         let { data, error } = await supabase
@@ -73,7 +76,7 @@ export default function Volleyball() {
         const author = authors.find(x => x.id === item.author_id)
         
         return (
-            <TouchableOpacity onPress={() => router.navigate({pathname: "/(tabs)/news/", params: { id: item.id }})}>
+            <TouchableOpacity key={item.id} onPress={() => router.navigate({pathname: "/(tabs)/news/", params: { id: item.id }})}>
                 <View style={styles.newsCard}>
                     <View style={styles.newsHeader}>
                         <View style={styles.authorAvatar}>
@@ -101,11 +104,14 @@ export default function Volleyball() {
         <SafeAreaView style={styles.safeArea}>
             {!loading &&
                 <FlatList
+                    key={`numColumns-${isSmallDevice ? 1 : Math.floor(screenWidth/ 590)}`} 
+                    numColumns={isSmallDevice ? 1 : Math.floor(screenWidth/590)}
                     data={sportsNews}
                     keyExtractor={(item) => item.id}
                     renderItem={renderNewsItem}
                     ListHeaderComponent={renderListHeader}
                     contentContainerStyle={styles.contentContainer}
+                    ItemSeparatorComponent={() => <View style={{height: 20, width: 10}} />}
                 />
             }
         </SafeAreaView>

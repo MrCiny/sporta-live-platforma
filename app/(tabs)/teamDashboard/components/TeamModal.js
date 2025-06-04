@@ -6,63 +6,43 @@ import { useTheme } from "@/components/themeContext";
 import { Picker } from "@react-native-picker/picker";
 import { getImage, handleGallery, handleImageUpload } from "@/components/handleGallery";
 
-export default function NewsModal(props) {
+export default function TeamModal(props) {
   const {
     visible, 
-    news, 
+    team, 
     onClose, 
     onFinish
   } = props
 
-  const [image, setImage] = useState("");
-  const [title, setTitle] = useState("");
+  const [logo, setLogo] = useState("");
+  const [nosaukums, setNosaukums] = useState("");
   const [sport, setSport] = useState("");
-  const [author_id, setAuthor] = useState("");
-  const [description, setDescription] = useState("");
   const { theme } = useTheme();
   const modalStyles = getModalStyles(theme);
 
   useEffect(() => {
-    if (news) {
-      setImage(news.image)
-      setTitle(news.title)
-      setSport(news.sport)
-      setAuthor(news.author_id)
-      setDescription(news.description)
+    if (team) {
+      setLogo(team.logo)
+      setNosaukums(team.nosaukums)
+      setSport(team.sport)
     } else {
-      setImage("")
-      setTitle("")
+      setLogo("")
+      setNosaukums("")
       setSport("")
-      setAuthor("")
-      setDescription("")
     }
-    getUserId()
-  }, [news]);
-
-  const getUserId = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-
-    let { data, error } = await supabase
-      .from('Users')
-      .select('id')
-      .eq('user_id', user.id)
-      .single()
-
-    setAuthor(data.id)
-  }
+  }, [team]);
 
   const handleSave = async () => {
-    let imageUri = await handleImageUpload("thumbnail", image);
-    let finalImage = await getImage("thumbnail", imageUri)
+    let imageUri = await handleImageUpload("logo", logo);
+    let finalImage = await getImage("logo", imageUri)
+    const teamPayload = { nosaukums, logo: finalImage, sport };
 
     try {
-      if (news) {
-        const zinasPayload = { title, description, image: finalImage, author_id, sport };
-        await supabase.from("Sporta_zinas").update(zinasPayload).eq("id", news.id);
+      if (team) {
+        await supabase.from("Komanda").update(teamPayload).eq("id", team.id);
       }
       else {
-        const zinasPayload = { title, description, image: finalImage, author_id, sport, published: new Date().toLocaleDateString() };
-        const { data: speleInfo, error} = await supabase.from("Sporta_zinas").insert(zinasPayload).select();
+        const { data, error} = await supabase.from("Komanda").insert(teamPayload).select();
         if (error) console.log(error)
       }
 
@@ -70,7 +50,7 @@ export default function NewsModal(props) {
       onFinish();
       onClose();
     } catch (error) {
-      console.error("Error saving news:", error);
+      console.error("Error saving komandas:", error);
     }
     onClose();
   };
@@ -78,7 +58,7 @@ export default function NewsModal(props) {
   const handleImageChoose = async () => {
     let imageUri = await handleGallery();
     if (await imageUri) {
-      setImage(imageUri ?? "");
+      setLogo(imageUri ?? "");
     }
   }
 
@@ -92,16 +72,16 @@ export default function NewsModal(props) {
 
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={modalStyles.dialogContainer}>
           <View style={modalStyles.dialog}>
-            <Text style={modalStyles.title}>{news ? "Edit news" : "Create news"}</Text>
+            <Text style={modalStyles.title}>{team ? "Edit team" : "Create team"}</Text>
             <View style={modalStyles.card}>
               <TouchableOpacity style={{position: "static"}} onPress={() => handleImageChoose()}>
                 <View>
-                  <Image source={{ uri: image }} resizeMode="contain" style={modalStyles.imageContainer}/>
+                  <Image source={{ uri: logo }} resizeMode="contain" style={modalStyles.imageContainer}/>
                 </View>
               </TouchableOpacity>
               <View style={{ marginLeft: 20, position: "static"}}>
-                <Text style={[modalStyles.title, { fontSize: 14, marginBottom: 0}]}>Title: </Text>
-                <TextInput placeholder="Title" value={title} onChangeText={setTitle} style={modalStyles.input} />
+                <Text style={[modalStyles.title, { fontSize: 14, marginBottom: 0}]}>Nosaukums: </Text>
+                <TextInput placeholder="Nosaukums" value={nosaukums} onChangeText={setNosaukums} style={modalStyles.input} />
                 <Text style={[modalStyles.title, { fontSize: 14, marginBottom: 0}]}>Sports: </Text>
                 <Picker
                   style={modalStyles.input}
@@ -115,14 +95,6 @@ export default function NewsModal(props) {
                   <Picker.Item label={"Volejbols"} value={"volleyball"} />
                   <Picker.Item label={"Basketbols"} value={"basketball"} />
                 </Picker>
-                <Text style={[modalStyles.title, { fontSize: 14, marginBottom: 0}]}>Description: </Text>
-                <TextInput 
-                  multiline
-                  numberOfLines={6}
-                  value={description}
-                  onChangeText={setDescription}
-                  style={modalStyles.input}
-                />
               </View>
             </View>
 

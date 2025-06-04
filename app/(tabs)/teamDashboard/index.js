@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, FlatList, Modal, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native'
 import { supabase } from '@/lib/supabase-client'
 import { useTheme } from '@/components/themeContext'
-import { getDashboardStyles, getStyles } from '@/styles/styles'
+import { getStyles, getTeamDashboardStyles } from '@/styles/styles'
 import { Image } from '@rneui/themed'
 import { router } from 'expo-router'
-import NewsModal from './components/NewsModal'
+import TeamModal from './components/TeamModal'
 
-export default function NewsDashboard() {
-  const [newsList, setNewsList] = useState([])
+export default function TeamDashboard() {
+  const [teamList, setTeamList] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
-  const [selectedNews, setSelectedNews] = useState(null)
+  const [selectedTeam, setSelectedTeam] = useState(null)
 
   const { theme } = useTheme()
   const styles = getStyles(theme)
-  const dashboardStyles = getDashboardStyles(theme)
+  const dashboardStyles = getTeamDashboardStyles(theme)
 
   useEffect(() => {
     checkAccess()
@@ -34,44 +34,38 @@ export default function NewsDashboard() {
       .eq("user_id", user.id)
       .single()
 
-    if (data?.role !== "Admin" && data?.role !== "Author") {
+    if (data?.role !== "Admin") {
       router.navigate("/(tabs)/sports/")
       return
     }
 
-    fetchNews(data)
+    fetchTeams()
   }
 
   const refreshData = async () => {
     checkAccess()
   }
 
-  const fetchNews = async (author) => {
-    if (author.role === "Author") {
-      const { data } = await supabase.from('Sporta_zinas').select('*').eq('author_id', author.id).order('published', { ascending: false })
-      setNewsList(data || [])
-    }
-    else {
-      const { data } = await supabase.from('Sporta_zinas').select('*').order('published', { ascending: false })
-      setNewsList(data || [])
-    }
+  const fetchTeams = async () => {
+    const { data } = await supabase.from('Komanda').select('*').order('id', { ascending: false })
+    setTeamList(data || [])
   };
 
-  const openModal = (news = null) => {
-    if (news) 
-      setSelectedNews(news);
+  const openModal = (selectTeam = null) => {
+    if (selectTeam) 
+      setSelectedTeam(selectTeam);
     else 
-      setSelectedNews(null);
+      setSelectedTeam(null);
     
     setModalVisible(true);
   };
 
-  const renderNewsItem = ({ item }) => (
+  const renderTeamItem = ({ item }) => (
     <TouchableOpacity onPress={() => openModal(item)} style={dashboardStyles.card}>
-      <Image source={{ uri: item.image }} style={dashboardStyles.thumbnail} />
+      <Image source={{ uri: item.logo }} style={dashboardStyles.thumbnail} />
       <View>
-        <Text style={dashboardStyles.title}>{item.title}</Text>
-        <Text style={[dashboardStyles.subtitle, { marginLeft: 10 }]}>📅 Published: {item.published}</Text>
+        <Text style={dashboardStyles.title}>{item.nosaukums}</Text>
+        <Text style={[dashboardStyles.subtitle, { marginLeft: 10 }]}>🏆Sport: {item.sport}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -79,22 +73,22 @@ export default function NewsDashboard() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={dashboardStyles.headerRow}>
-        <Text style={styles.headerText}>News Dashboard</Text>
-        <TouchableOpacity onPress={() => openModal()} style={dashboardStyles.addButton}>
+        <Text style={styles.headerText}>Team Dashboard</Text>
+        <TouchableOpacity onPress={() => openModal(null)} style={dashboardStyles.addButton}>
           <Text style={dashboardStyles.addButtonText}>+ Create</Text>
         </TouchableOpacity>
       </View>
       <ScrollView horizontal>
         <FlatList
-          data={newsList}
+          data={teamList}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={renderNewsItem}
+          renderItem={renderTeamItem}
           showsVerticalScrollIndicator={false}
         />
       </ScrollView>
-      <NewsModal
+      <TeamModal
         visible={modalVisible}
-        news={selectedNews}
+        team={selectedTeam}
         onClose={() => setModalVisible(false)}
         onFinish={() => refreshData()}
       />

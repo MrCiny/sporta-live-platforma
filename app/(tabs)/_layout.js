@@ -30,7 +30,8 @@ function TabsWithTheme() {
         key={refreshKey}
         screenOptions={{ 
           headerShown: true, 
-          tabBarStyle: styles.tabBarStyle, 
+          tabBarStyle: styles.tabBarStyle,
+          tabBarVisibilityAnimationConfig: { hide: true },
           header: () => <MainHeader />, 
           animation: "shift",  
         }}
@@ -128,7 +129,14 @@ function TabsWithTheme() {
             }}
           />
           <Tabs.Screen
+            name="teamDashboard"
+            options={{
+              href: null
+            }}
+          />
+          <Tabs.Screen
             name="news"
+            key={refreshSectionKey}
             options={{
               href: null
             }}
@@ -141,6 +149,21 @@ function TabsWithTheme() {
           />
           <Tabs.Screen
             name="streams"
+            key={refreshSectionKey}
+            options={{
+              href: null
+            }}
+          />
+          <Tabs.Screen
+            name="teams"
+            key={refreshSectionKey}
+            options={{
+              href: null
+            }}
+          />
+          <Tabs.Screen
+            name="userGuide"
+            key={refreshSectionKey}
             options={{
               href: null
             }}

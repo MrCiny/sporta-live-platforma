@@ -5,6 +5,7 @@ import { getModalStyles } from "@/styles/styles";
 import { useTheme } from "@/components/themeContext";
 import { Picker } from "@react-native-picker/picker";
 import { getImage, handleGallery, handleImageUpload } from "@/components/handleGallery";
+import { DatePickerModal } from 'react-native-paper-dates';
 
 export default function GameModal(props) {
   const {
@@ -16,33 +17,40 @@ export default function GameModal(props) {
   } = props
   const [komanda1, setKomanda1] = useState(1);
   const [komanda2, setKomanda2] = useState(1);
-  const [datums, setDatums] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
   const [vieta, setVieta] = useState("");
   const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
-  const [sport, setSport] = useState("");
+  const [sport, setSport] = useState("football");
   const [komandas, setKomandas] = useState([])
+  const [showDate, setShowDate] = useState(false)
+  const [showTime, setShowTime] = useState(false)
   const { theme } = useTheme();
   const modalStyles = getModalStyles(theme);
 
   useEffect(() => {
+    console.log(game)
     if (game && stream) {
       setKomanda1(game.komanda1);
       setKomanda2(game.komanda2);
-      setDatums(game.datums);
+      setDate(new Date(Date.parse(game.date)));
+      setTime(game.laiks)
       setVieta(game.vieta);
       setImage(stream.image);
       setTitle(stream.title);
       setSport(stream.sport);
       getKomandas()
-    } else {
+    }
+    else {
       setKomanda1(1);
       setKomanda2(1);
-      setDatums("");
+      setDate(new Date());
+      setTime(new Date())
       setVieta("");
       setImage("");
       setTitle("");
-      setSport("football");
+      setSport("");
     }
   }, [game]);
 
@@ -103,8 +111,8 @@ export default function GameModal(props) {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     <Modal visible={visible} transparent animationType="fade">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={modalStyles.overlay}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} />
@@ -134,9 +142,7 @@ export default function GameModal(props) {
                     <Picker.Item key={item.id} label={item.nosaukums} value={item.id} />
                   ))}
                 </Picker>
-                {/*<TextInput placeholder="Komanda 1" value={komanda1} onChangeText={setKomanda1} style={modalStyles.input} />*/}
                 <Text style={[modalStyles.title, { fontSize: 14, marginBottom: 0}]}>Komanda 2: </Text>
-                {/*<TextInput placeholder="Komanda 2" value={komanda2} onChangeText={setKomanda2} style={modalStyles.input} />*/}
                 <Picker
                   style={modalStyles.input}
                   selectedValue={komanda2}
@@ -173,7 +179,7 @@ export default function GameModal(props) {
           </View>
         </KeyboardAvoidingView>
       </View>
+      </ScrollView>
     </Modal>
-    </ScrollView>
   );
 }

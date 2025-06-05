@@ -31,9 +31,7 @@ function TabsWithTheme() {
         screenOptions={{ 
           headerShown: true, 
           tabBarStyle: styles.tabBarStyle,
-          tabBarVisibilityAnimationConfig: { hide: true },
           header: () => <MainHeader />, 
-          animation: "shift",  
         }}
       >
           <Tabs.Screen

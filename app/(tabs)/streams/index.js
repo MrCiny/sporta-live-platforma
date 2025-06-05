@@ -40,14 +40,16 @@ export default function streams() {
             .select('*')
             .eq('id', info.id)
 
-            setSpelesInfo(data);
-            getKomandasInfo(data);
+        setSpelesInfo(data);
+        getKomandasInfo(data);
 
         let { data: Tiesraide, err } = await supabase
             .from('Tiesraide')
-            .select('stream_id')
+            .select('stream_playback')
             .eq("speles_id", info.id)
-            setStreamId(Tiesraide[0].stream_id);
+            .single()
+            setStreamId(Tiesraide.stream_playback);
+            
     };
 
     async function getKomandasInfo(spele) {
@@ -66,6 +68,7 @@ export default function streams() {
     const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
     const VideoPlayer = () => {
+        console.log(streamId)
         if (Platform.OS === "web"){
             var MuxPlayer = require("@mux/mux-player-react");
             

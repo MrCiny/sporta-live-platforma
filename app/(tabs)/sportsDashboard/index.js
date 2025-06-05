@@ -70,14 +70,14 @@ export default function GameDashboard() {
 
   const renderGameItem = ({ item }) => (
     <TouchableOpacity onPress={() => openModal(item)} style={dashboardStyles.card}>
-      <Image source={{ uri: item.Tiesraide[0].image }} style={dashboardStyles.thumbnail} />
-      <Text style={dashboardStyles.title}>{item.Tiesraide ? item.Tiesraide[0].title : ''} </Text>
+      <Image source={{ uri: item.Tiesraide[0]?.image ?? "" }} style={dashboardStyles.thumbnail} />
+      <Text style={dashboardStyles.title}>{item.Tiesraide ? item.Tiesraide[0]?.title : ''} </Text>
       <View style={{marginLeft: 15, marginTop: 10}}>
         <Text style={dashboardStyles.subtitle}>📅 Date: {item.date} {item.laiks}</Text>
         {item.Tiesraide && (
           <>
-            <Text style={dashboardStyles.subtitle}>🔑 Stream Key: {item.Tiesraide[0].stream_key}</Text>
-            <Text style={dashboardStyles.subtitle}>Sports: {item.Tiesraide[0].sport}</Text>
+            <Text style={dashboardStyles.subtitle}>🔑 Stream Key: {item.Tiesraide[0]?.stream_key}</Text>
+            <Text style={dashboardStyles.subtitle}>Sports: {item.Tiesraide[0]?.sport}</Text>
           </>
         )}
       </View>

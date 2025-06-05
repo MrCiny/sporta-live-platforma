@@ -6,7 +6,7 @@ export default function IndexPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        router.replace("/(tabs)/sports/");
+        router.navigate("/(tabs)/sports/");
       } else {
         console.log("no user");
       }
@@ -14,10 +14,10 @@ export default function IndexPage() {
 
     supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        router.replace("/(tabs)/sports/");
+        router.navigate("/(tabs)/sports/");
       } else {
         console.log("no user");
-        router.replace("/(auth)/login");
+        router.navigate("/(auth)/login");
       }
     });
   }, []);

@@ -66,7 +66,7 @@ export default function GameModal(props) {
         await supabase.from("Tiesraide").update(streamPayload).eq("id", stream.id).select();
       } else {
         const { data: speleInfo, error} = await supabase.from("Speles_Info").insert(gamePayload).select();
-        const response = await fetch('https://d995-92-49-27-59.ngrok-free.app/create-livestream', {
+        const response = await fetch('https://3a90-92-49-27-59.ngrok-free.app/create-livestream', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

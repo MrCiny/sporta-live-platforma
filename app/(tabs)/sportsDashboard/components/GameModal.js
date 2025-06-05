@@ -30,7 +30,6 @@ export default function GameModal(props) {
   const modalStyles = getModalStyles(theme);
 
   useEffect(() => {
-    console.log(game)
     if (game && stream) {
       setKomanda1(game.komanda1);
       setKomanda2(game.komanda2);
@@ -40,7 +39,7 @@ export default function GameModal(props) {
       setImage(stream.image);
       setTitle(stream.title);
       setSport(stream.sport);
-      getKomandas()
+      getKomandas(stream.sport);
     }
     else {
       setKomanda1(1);
@@ -50,9 +49,10 @@ export default function GameModal(props) {
       setVieta("");
       setImage("");
       setTitle("");
-      setSport("");
+      setSport("football");
+      getKomandas("football")
     }
-  }, [game]);
+  }, [game, stream]);
 
   const handleSave = async () => {
     let imageUri = await handleImageUpload("thumbnail", image);
@@ -66,7 +66,7 @@ export default function GameModal(props) {
         await supabase.from("Tiesraide").update(streamPayload).eq("id", stream.id).select();
       } else {
         const { data: speleInfo, error} = await supabase.from("Speles_Info").insert(gamePayload).select();
-        const response = await fetch('http://192.168.0.22:3000/create-livestream', {
+        const response = await fetch('https://d995-92-49-27-59.ngrok-free.app/create-livestream', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -79,7 +79,8 @@ export default function GameModal(props) {
           ...streamPayload,
           speles_id: speleInfo ? speleInfo[0].id : 0,
           stream_key: muxStream.stream_key,
-          stream_id: muxStream.playback_ids[0].id
+          stream_id: muxStream.id, 
+          stream_playback: muxStream.playback_ids[0].id
         }
 
         await supabase.from("Tiesraide").insert(insertPayload).select();
@@ -102,8 +103,16 @@ export default function GameModal(props) {
     }
   }
 
-  const getKomandas = async () => {
-    const {data: komanda, error } = await supabase.from("Komanda").select('id,nosaukums').eq('sport', stream?.sport)
+  const getKomandas = async (itemValue) => {
+    const {data: komanda, error } = await supabase.from("Komanda").select('id,nosaukums').eq('sport', itemValue)
+    if (error)
+      console.log(error.message)
+    else
+      setKomandas(komanda)
+  }
+
+  const getAllKomandas = async () => {
+    const {data: komanda, error } = await supabase.from("Komanda").select('id,nosaukums')
     if (error)
       console.log(error.message)
     else
@@ -160,8 +169,10 @@ export default function GameModal(props) {
                 <Picker
                   style={modalStyles.input}
                   selectedValue={sport}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setSport(itemValue)
+                  onValueChange={(itemValue, itemIndex) =>{
+                      setSport(itemValue)
+                      getKomandas(itemValue)
+                    }
                   }
                 >
                   <Picker.Item label={"Futbols"} value={"football"} />

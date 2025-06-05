@@ -22,8 +22,16 @@ export default function Auth() {
       password: password,
     })
 
-    if (error) showSnackbar(error.message, true)
+    if (error) { 
+      showSnackbar(error.message, true)
+      return
+    }
+    else {
+      router.navigate("/(tabs)/sports")
+    }
+
       setLoading(false)
+
   }
 
   const signUpWithEmail = async () => {

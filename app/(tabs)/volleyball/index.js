@@ -25,7 +25,7 @@ export default function Volleyball() {
         let { data, error } = await supabase
             .from('Users')
             .select('id,name')
-            .eq('role', 'Author')
+            .in('role', ['Author', 'Admin'])
         
         if (error) console.log(error.message)
 

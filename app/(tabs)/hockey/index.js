@@ -36,7 +36,7 @@ export default function Hockey() {
         let { data, error } = await supabase
             .from('Sporta_zinas')
             .select('*')
-            .eq('sport', 'hockey')
+            .in('role', ['Author', 'Admin'])
 
         if (error) console.log(error.message)
 
